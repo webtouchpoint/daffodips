@@ -5,10 +5,23 @@
 // Variables
 @import "variables";
 
+// Typography
+@import "typography";
+
 // Bootstrap
 @import '~bootstrap/scss/bootstrap';
 
-.navbar-laravel {
-  background-color: #fff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
-}
+// Topbar
+@import "components/topbar";
+
+// Carousel
+@import "components/carousel";
+
+// Nabvar
+@import "components/navbar";
+
+// Pages
+@import "pages/welcome";
+
+
+
