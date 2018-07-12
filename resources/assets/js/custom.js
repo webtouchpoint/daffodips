@@ -9,4 +9,10 @@ $(document).ready(function(){
             $(this).toggleClass('open');       
         }
     );
+    
+    $(window).on('load', function() {
+        $('#slider').nivoSlider({
+            controlNav: false,
+        });
+    });
 });

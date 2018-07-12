@@ -1,8 +1,9 @@
 <nav class="navbar navbar-expand-md navbar-light navbar-daffodips">
     <div class="container">
         <a class="navbar-brand" href="{{ url('/') }}">
-            <!-- {{ config('app.name', 'Laravel') }} --> <img class="d-none d-lg-block" src="http://theheritageschool.org/images/logo.png">
-            <img class="d-lg-none" src="images/logo.png">
+            <!-- {{ config('app.name', 'Laravel') }} -->
+            <img class="d-none d-lg-block logo-img scale-with-grid" src="http://www.aischennai.org/new/wp-content/uploads/2018/01/i-Bx3hztG-M.png" data-retina="" data-height="244" alt="i-Bx3hztG-M">
+            <img class="d-lg-none logo-img" src="http://www.aischennai.org/new/wp-content/uploads/2018/01/i-Bx3hztG-M.png">
         </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
             <span class="navbar-toggler-icon"></span>

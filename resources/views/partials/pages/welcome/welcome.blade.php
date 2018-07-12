@@ -2,7 +2,8 @@
 	<div class="container">
 		<div class="row">
 			<div class="col-md-7">
-				<h2 class="mb-3 text-blue">Welcome To <span class="text-yellow">Daffodips Foundation School</span></h2>
+				<h2 class="mb-3 text-blue">Welcome To</h2>
+				<h2 class="mb-3 text-blue"><strong>Daffodips Foundation School</strong></h2>
 				<p class="lead">Donec ullamcorper nulla non metus auctor fringilla. Vestibulum id ligula porta felis euismod semper. Praesent commodo cursus magna, vel scelerisque nisl consectetur. Fusce dapibus, tellus ac cursus commodo.</p>
 				<p class="lead">Donec ullamcorper nulla non metus auctor fringilla.</p>
 			</div>

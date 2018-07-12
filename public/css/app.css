@@ -22,6 +22,11 @@
   background-color: #ffe737;
 }
 
+h2 {
+  text-transform: uppercase;
+  font-weight: 800;
+}
+
 /*!
  * Bootstrap v4.1.1 (https://getbootstrap.com/)
  * Copyright 2011-2018 The Bootstrap Authors
@@ -10476,36 +10481,10 @@ a.text-dark:focus {
   color: #6666cc;
 }
 
-.carousel-control-prev,
-.carousel-control-next {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-align: center;
-  -ms-flex-align: center;
-  align-items: center;
-  -webkit-box-pack: center;
-  -ms-flex-pack: center;
-  justify-content: center;
-  width: 5%;
-  color: #fff;
-  text-align: center;
-  opacity: 0.3;
-}
-
-@media screen and (max-width: 600px) {
-  .carousel-control-prev,
-  .carousel-control-next {
-    width: 10%;
-  }
-
-  .carousel-control-prev .img-arrow,
-  .carousel-control-next .img-arrow {
-    height: 25%;
-  }
+.theme-default .nivoSlider {
+  margin-bottom: 0 !important;
+  -webkit-box-shadow: none !important;
+  box-shadow: none !important;
 }
 
 .navbar {
@@ -10513,7 +10492,6 @@ a.text-dark:focus {
 }
 
 .navbar-brand {
-  padding: 0 15px;
   height: 80px;
   line-height: 80px;
 }
@@ -10534,7 +10512,7 @@ a.text-dark:focus {
 }
 
 .navbar-daffodips {
-  background-color: #ffe737;
+  background-color: #6666cc;
   -webkit-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
           box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
 }
@@ -10549,31 +10527,46 @@ a.text-dark:focus {
 /* change the link color */
 
 .navbar-daffodips .navbar-nav .nav-link {
-  color: #000;
-  font-weight: 600;
+  color: #fff;
+  text-transform: uppercase;
 }
 
 /* change the color of active or hovered links */
 
 .navbar-daffodips .nav-item.active .nav-link,
 .navbar-daffodips .nav-item:hover .nav-link {
-  color: #6666cc;
+  color: #eee;
 }
 
 /* for dropdown only - change the color of droodown */
 
 .navbar-daffodips .dropdown-menu {
-  background-color: #ffe737;
+  background-color: #6666cc;
 }
 
 .navbar-daffodips .dropdown-item {
-  color: #000;
+  color: #fff;
+  text-transform: uppercase;
 }
 
 .navbar-daffodips .dropdown-item:hover,
 .navbar-daffodips .dropdown-item:focus {
-  color: #000;
-  background-color: #fff;
+  color: #eee;
+  background-color: #5e5ec9;
+}
+
+.logo-img {
+  vertical-align: middle;
+  max-height: 100%;
+}
+
+.scale-with-grid img {
+  max-width: 100%;
+  height: auto;
+}
+
+.nav-about {
+  font-weight: 600;
 }
 
 .welcome {

@@ -4,7 +4,8 @@
 }
 
 .navbar-brand {
-  padding: 0 15px;
+  // padding: 0 15px;
+  // padding: 0 0;
   height: 80px;
   line-height: 80px;
 }
@@ -26,7 +27,7 @@
 
 // Navbar background-color
 .navbar-daffodips {
-  background-color: $yellow;
+  background-color: $blue;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
 }
 
@@ -38,25 +39,44 @@
 
 /* change the link color */
 .navbar-daffodips .navbar-nav .nav-link {
-    color: #000;
-    font-weight: 600;
+    color: #fff;
+    // font-weight: 600;
+    text-transform: uppercase;
 }
 
 /* change the color of active or hovered links */
 .navbar-daffodips .nav-item.active .nav-link,
 .navbar-daffodips .nav-item:hover .nav-link {
-    color: $blue;
+    color: #eee;
 }
 
 /* for dropdown only - change the color of droodown */
 .navbar-daffodips .dropdown-menu {
-    background-color: $yellow;
+    background-color: $blue;
 }
 .navbar-daffodips .dropdown-item {
-    color: #000;
+    color: #fff;
+    text-transform: uppercase;
 }
 .navbar-daffodips .dropdown-item:hover,
 .navbar-daffodips .dropdown-item:focus {
-    color: #000;
-    background-color: #fff;
+    color: #eee;
+    background-color: darken($blue, 2%);
+}
+
+// Logo
+
+.logo-img {
+    vertical-align: middle;
+    max-height: 100%;
+}
+
+.scale-with-grid img {
+    max-width: 100%;
+    height: auto;
+}
+
+// About navigations
+.nav-about {
+    font-weight: 600;
 }
