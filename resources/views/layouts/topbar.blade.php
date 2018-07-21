@@ -1,4 +1,4 @@
-<div class="top-bar d-none d-lg-block">
+<div class="topbar d-none d-lg-block">
 	<div class="container">
 		<div class="clearfix">
 			<ul class="social">

@@ -2,9 +2,7 @@
 // Fonts
 @import url("https://fonts.googleapis.com/css?family=Raleway:300,400,600");
 
-@import url("https://fonts.googleapis.com/css?family=Roboto:300,400,600");
-
-@import url("https://fonts.googleapis.com/css?family=Karla");
+@import url("https://fonts.googleapis.com/css?family=Open+Sans");
 
 
 // Variables
@@ -16,7 +14,9 @@
 // Bootstrap
 @import '~bootstrap/scss/bootstrap';
 
-@import '~flexslider/flexslider';
+@import '~aos/dist/aos';
+
+@import '~bxslider/dist/jquery.bxslider';
 
 // Topbar
 @import "components/topbar";
@@ -44,10 +44,6 @@
 
 // Footer
 @import "layout/footer";
-
-
-
-
 
 
 

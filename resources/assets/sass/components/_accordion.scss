@@ -16,10 +16,6 @@
     background-color: #ccc;
 }
 
-.custom-accordion-active {
-    margin-bottom: 18px!important;
-}
-
 .custom-accordion:after {
     content: '\002B';
     color: #777;
@@ -38,4 +34,8 @@
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.2s ease-out;
+}
+
+.custom-accordion-panel p {
+    margin-top: 16px!important;
 }

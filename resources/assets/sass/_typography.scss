@@ -1,5 +1,5 @@
 h1, h2, h3, h4, h5, h6 {
-    font-family: Raleway;
+    font-family: "Open Sans";
 }
 
 span.dark { color:#e04622;}
@@ -14,7 +14,6 @@ p {
 }
 
 // all section
-
 section{ padding:50px 0;}
 h2.section_title{font-weight:bold; font-size:32px; text-transform:uppercase; text-align:center; padding-bottom:20px; margin-bottom:30px; position:relative;}
 h2.section_title::after{ content:""; position:absolute; width:60px; height:2px; background-color:#424242; bottom:0; left:0; right:0; margin:auto;}

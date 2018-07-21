@@ -2,7 +2,7 @@
   <div class="container">
     <div class="row">
       <div class="col-12 col-md">
-       Daffodips Foundation School
+       <span class="text-white">Daffodips Foundation School</span>
         <small class="d-block mb-3 text-muted">&copy; 2018 | All rights reserved.</small>
       </div>
       <div class="col-6 col-md">
