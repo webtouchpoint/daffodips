@@ -2,8 +2,10 @@
     <div class="container">
         <a class="navbar-brand" href="{{ url('/') }}">
             <!-- {{ config('app.name', 'Laravel') }} -->
-            <img class="d-none d-lg-block logo-img scale-with-grid" src="http://www.aischennai.org/new/wp-content/uploads/2018/01/i-Bx3hztG-M.png" data-retina="" data-height="244" alt="i-Bx3hztG-M">
-            <img class="d-lg-none logo-img" src="http://www.aischennai.org/new/wp-content/uploads/2018/01/i-Bx3hztG-M.png">
+            <!-- Daffodips Fondation School -->
+<!--             <img class="d-none d-lg-block logo-img scale-with-grid" src="http://www.aischennai.org/new/wp-content/uploads/2018/01/i-Bx3hztG-M.png"> -->
+              <img class="d-none d-lg-block logo-img scale-with-grid" src="http://iisbangalore.org/wp-content/uploads/2016/04/logo.png">
+            <img class="d-lg-none logo-img" src="http://iisbangalore.org/wp-content/uploads/2016/04/logo.png" width="225px">
         </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
             <span class="navbar-toggler-icon"></span>
@@ -29,7 +31,6 @@
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                         <a class="dropdown-item" href="#">Overview</a>
                         <a class="dropdown-item" href="#">Principal&rsquo;s Message</a>
-                        <!-- <div class="dropdown-divider"></div> -->
                         <a class="dropdown-item" href="#">Vission &amp; Mission</a>
                         <a class="dropdown-item" href="#">Future Plan &amp; Thoughts</a>                        
                     </div>

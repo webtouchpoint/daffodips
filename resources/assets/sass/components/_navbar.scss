@@ -1,11 +1,15 @@
+// Topbar background color
+
+
  // Navbar height
  .navbar {
-  min-height: 80px;
+    min-height: 80px;
+    padding-top: 0;
+    padding-bottom: 0;
 }
 
 .navbar-brand {
   // padding: 0 15px;
-  // padding: 0 0;
   height: 80px;
   line-height: 80px;
 }
@@ -27,8 +31,9 @@
 
 // Navbar background-color
 .navbar-daffodips {
-  background-color: $blue;
+  background-color: #fff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+  // box-shadow: 0 2px 5px 0 rgba(0,0,0,0.1);
 }
 
 /* change the brand and text color */
@@ -39,29 +44,52 @@
 
 /* change the link color */
 .navbar-daffodips .navbar-nav .nav-link {
-    color: #fff;
-    // font-weight: 600;
-    text-transform: uppercase;
+    font-family: "Roboto", sans-serif;
+    // padding: 30px 10px;
+    color: #8f8f8f;
+    display: block;
+    // text-transform: uppercase;
+    font-size: 14px;
+    font-weight: 700;
+}
+@media (min-width: 768px) {
+    .navbar-daffodips .navbar-nav .nav-link {
+        padding: 30px 10px;
+    }
 }
 
 /* change the color of active or hovered links */
 .navbar-daffodips .nav-item.active .nav-link,
 .navbar-daffodips .nav-item:hover .nav-link {
-    color: #eee;
+    color: #a6a6a6;
+    // border-bottom-color: $blue !important;
+    // background-color: $blue;
 }
 
 /* for dropdown only - change the color of droodown */
 .navbar-daffodips .dropdown-menu {
-    background-color: $blue;
+  // background-color: $blue;
+  // border-color: transparent;
+    // border-color: $blue;
+    border-color: transparent;
+    // text-transform: uppercase;
+    margin-top: 0;
 }
 .navbar-daffodips .dropdown-item {
-    color: #fff;
-    text-transform: uppercase;
+    // font-family: 'Karla';
+    font-weight: 700;
+    // text-transform: uppercase;
+    font-size: 14px;
+    // color: rgba(0, 0, 0, 0.5);
+    color: #8f8f8f;
+    min-width: 15rem;
+    // padding-left: 10px;
 }
+
 .navbar-daffodips .dropdown-item:hover,
 .navbar-daffodips .dropdown-item:focus {
-    color: #eee;
-    background-color: darken($blue, 2%);
+    // color: #a6a6a6;
+    // background-color: #fff;
 }
 
 // Logo
@@ -80,3 +108,21 @@
 .nav-about {
     font-weight: 600;
 }
+
+// Remove dropdown's caret
+.dropdown-toggle::after {
+    display:none;
+}
+
+// Hover dropdown
+
+.dropdown:hover>.dropdown-menu {
+  display: block;
+}
+
+.dropdown>.dropdown-toggle:active {
+  /*Without this, clicking will make it sticky*/
+    pointer-events: none;
+}
+
+

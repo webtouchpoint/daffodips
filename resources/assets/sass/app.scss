@@ -2,6 +2,11 @@
 // Fonts
 @import url("https://fonts.googleapis.com/css?family=Raleway:300,400,600");
 
+@import url("https://fonts.googleapis.com/css?family=Roboto:300,400,600");
+
+@import url("https://fonts.googleapis.com/css?family=Karla");
+
+
 // Variables
 @import "variables";
 
@@ -11,17 +16,38 @@
 // Bootstrap
 @import '~bootstrap/scss/bootstrap';
 
+@import '~flexslider/flexslider';
+
 // Topbar
 @import "components/topbar";
-
-// Carousel
-@import "components/slide";
 
 // Nabvar
 @import "components/navbar";
 
+// Sidenav
+@import "components/sidenav";
+
+// Slider
+@import "components/slider";
+
+// Slider
+@import "components/header";
+
+// Button
+@import "components/button";
+
 // Pages
 @import "pages/welcome";
+
+// Accordion
+@import "components/accordion";
+
+// Footer
+@import "layout/footer";
+
+
+
+
 
 
 

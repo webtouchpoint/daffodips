@@ -1,15 +1,42 @@
-
+// welcome section
 .welcome {
+    background-color: #fff;
+}
+
+.welcome h2 {
+    color: #0e2d45;
+    font: 700 32px 'Raleway';
+    text-transform: uppercase;
+    line-height: normal;
+    padding-bottom: 7px;
+    position: relative;
+}
+
+.welcome h6 { color:#636262; font:400 14px 'Karla'; text-transform:uppercase; margin-bottom:0px;}
+.welcome h2 { color:#0e2d45; font:700 32px 'Raleway'; text-transform:uppercase; line-height:normal; padding-bottom:7px; position:relative;}
+.welcome h2::after { content:""; position:absolute; width:55px; height:2px; background-color:#424242; bottom:0; left:0;}
+
+
+
+// Principal desk section
+.principal-desk {
+	background-color: $dark-white;
+	text-align: right;
+}
+
+.principal-desk h2 { color:#0e2d45; font:700 32px 'Raleway'; text-transform:uppercase; line-height:normal; padding-bottom:7px; position:relative;}
+.principal-desk h2::after { content:""; position:absolute; width:55px; height:2px; background-color:#424242; bottom:0; right:0;}
+
+
+// Feature section
+.feature {
 	background-color: #fff;
 }
-.feature {
-	background-color: $blue;
+
+
+// Gallery section
+.gallery {
+	background-color: $dark-white;
 }
 
-.feature h2 {
-	color: #fff;
-}
 
-.feature .accordion button {
-	font-weight: 600;
-}

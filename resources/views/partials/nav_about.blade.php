@@ -1,4 +1,4 @@
-<ul class="nav flex-column nav-about">
+<ul class="nav flex-column sidenav">
     <li class="nav-item">
       <a class="nav-link active" href="#">Active</a>
     </li>

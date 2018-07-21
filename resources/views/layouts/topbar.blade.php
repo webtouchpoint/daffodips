@@ -1,4 +1,4 @@
-<div class="top_bar">
+<div class="top-bar d-none d-lg-block">
 	<div class="container">
 		<div class="clearfix">
 			<ul class="social">
@@ -8,7 +8,8 @@
 			</ul>
 			<ul class="rightc">
 				<li><i class="fa fa-phone"></i> 8597262650 </li>      
-				<li><i class="fa fa-envelope"></i> daffodips@gmail.com </li>
+				<li><i class="far fa-envelope"></i> daffodips@gmail.com </li>
+				<li><i class="far fa-user"></i> Login </li>
 			</ul>
 		</div>
 	</div>

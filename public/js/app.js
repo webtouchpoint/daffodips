@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 11);
+/******/ 	return __webpack_require__(__webpack_require__.s = 12);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -70,8 +70,8 @@
 "use strict";
 
 
-var bind = __webpack_require__(5);
-var isBuffer = __webpack_require__(19);
+var bind = __webpack_require__(7);
+var isBuffer = __webpack_require__(22);
 
 /*global toString:true*/
 
@@ -408,7 +408,7 @@ module.exports = g;
 /* WEBPACK VAR INJECTION */(function(process) {
 
 var utils = __webpack_require__(0);
-var normalizeHeaderName = __webpack_require__(21);
+var normalizeHeaderName = __webpack_require__(24);
 
 var DEFAULT_CONTENT_TYPE = {
   'Content-Type': 'application/x-www-form-urlencoded'
@@ -424,10 +424,10 @@ function getDefaultAdapter() {
   var adapter;
   if (typeof XMLHttpRequest !== 'undefined') {
     // For browsers use XHR adapter
-    adapter = __webpack_require__(7);
+    adapter = __webpack_require__(8);
   } else if (typeof process !== 'undefined') {
     // For node use HTTP adapter
-    adapter = __webpack_require__(7);
+    adapter = __webpack_require__(8);
   }
   return adapter;
 }
@@ -13408,19 +13408,71 @@ return jQuery;
 /* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
+/* WEBPACK VAR INJECTION */(function(global) {var scope = (typeof global !== "undefined" && global) ||
+            (typeof self !== "undefined" && self) ||
+            window;
+var apply = Function.prototype.apply;
 
+// DOM APIs, for completeness
 
-module.exports = function bind(fn, thisArg) {
-  return function wrap() {
-    var args = new Array(arguments.length);
-    for (var i = 0; i < args.length; i++) {
-      args[i] = arguments[i];
-    }
-    return fn.apply(thisArg, args);
-  };
+exports.setTimeout = function() {
+  return new Timeout(apply.call(setTimeout, scope, arguments), clearTimeout);
+};
+exports.setInterval = function() {
+  return new Timeout(apply.call(setInterval, scope, arguments), clearInterval);
+};
+exports.clearTimeout =
+exports.clearInterval = function(timeout) {
+  if (timeout) {
+    timeout.close();
+  }
 };
 
+function Timeout(id, clearFn) {
+  this._id = id;
+  this._clearFn = clearFn;
+}
+Timeout.prototype.unref = Timeout.prototype.ref = function() {};
+Timeout.prototype.close = function() {
+  this._clearFn.call(scope, this._id);
+};
+
+// Does not start the time, just sets up the members needed.
+exports.enroll = function(item, msecs) {
+  clearTimeout(item._idleTimeoutId);
+  item._idleTimeout = msecs;
+};
+
+exports.unenroll = function(item) {
+  clearTimeout(item._idleTimeoutId);
+  item._idleTimeout = -1;
+};
+
+exports._unrefActive = exports.active = function(item) {
+  clearTimeout(item._idleTimeoutId);
+
+  var msecs = item._idleTimeout;
+  if (msecs >= 0) {
+    item._idleTimeoutId = setTimeout(function onTimeout() {
+      if (item._onTimeout)
+        item._onTimeout();
+    }, msecs);
+  }
+};
+
+// setimmediate attaches itself to the global object
+__webpack_require__(19);
+// On some exotic environments, it's not clear which object `setimmediate` was
+// able to install onto.  Search each possibility in the same order as the
+// `setimmediate` library.
+exports.setImmediate = (typeof self !== "undefined" && self.setImmediate) ||
+                       (typeof global !== "undefined" && global.setImmediate) ||
+                       (this && this.setImmediate);
+exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
+                         (typeof global !== "undefined" && global.clearImmediate) ||
+                         (this && this.clearImmediate);
+
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
 /* 6 */
@@ -13619,13 +13671,31 @@ process.umask = function() { return 0; };
 "use strict";
 
 
+module.exports = function bind(fn, thisArg) {
+  return function wrap() {
+    var args = new Array(arguments.length);
+    for (var i = 0; i < args.length; i++) {
+      args[i] = arguments[i];
+    }
+    return fn.apply(thisArg, args);
+  };
+};
+
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
 var utils = __webpack_require__(0);
-var settle = __webpack_require__(22);
-var buildURL = __webpack_require__(24);
-var parseHeaders = __webpack_require__(25);
-var isURLSameOrigin = __webpack_require__(26);
-var createError = __webpack_require__(8);
-var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(27);
+var settle = __webpack_require__(25);
+var buildURL = __webpack_require__(27);
+var parseHeaders = __webpack_require__(28);
+var isURLSameOrigin = __webpack_require__(29);
+var createError = __webpack_require__(9);
+var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(30);
 
 module.exports = function xhrAdapter(config) {
   return new Promise(function dispatchXhrRequest(resolve, reject) {
@@ -13722,7 +13792,7 @@ module.exports = function xhrAdapter(config) {
     // This is only done if running in a standard browser environment.
     // Specifically not if we're in a web worker, or react-native.
     if (utils.isStandardBrowserEnv()) {
-      var cookies = __webpack_require__(28);
+      var cookies = __webpack_require__(31);
 
       // Add xsrf header
       var xsrfValue = (config.withCredentials || isURLSameOrigin(config.url)) && config.xsrfCookieName ?
@@ -13800,13 +13870,13 @@ module.exports = function xhrAdapter(config) {
 
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var enhanceError = __webpack_require__(23);
+var enhanceError = __webpack_require__(26);
 
 /**
  * Create an Error with the specified message, config, error code, request and response.
@@ -13825,7 +13895,7 @@ module.exports = function createError(message, config, code, request, response) 
 
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13837,7 +13907,7 @@ module.exports = function isCancel(value) {
 
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13863,15 +13933,15 @@ module.exports = Cancel;
 
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(12);
-module.exports = __webpack_require__(44);
+__webpack_require__(13);
+module.exports = __webpack_require__(45);
 
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
@@ -13881,11 +13951,10 @@ module.exports = __webpack_require__(44);
  * building robust, powerful web applications using Vue and Laravel.
  */
 
-__webpack_require__(13);
-__webpack_require__(52);
-__webpack_require__(36);
+__webpack_require__(14);
+__webpack_require__(39);
 
-window.Vue = __webpack_require__(37);
+window.Vue = __webpack_require__(40);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -13893,18 +13962,18 @@ window.Vue = __webpack_require__(37);
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-Vue.component('example-component', __webpack_require__(40));
+Vue.component('example-component', __webpack_require__(41));
 
 var app = new Vue({
   el: '#app'
 });
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-window._ = __webpack_require__(14);
+window._ = __webpack_require__(15);
 window.Popper = __webpack_require__(3).default;
 
 /**
@@ -13916,16 +13985,20 @@ window.Popper = __webpack_require__(3).default;
 try {
   window.$ = window.jQuery = __webpack_require__(4);
 
-  __webpack_require__(16);
+  __webpack_require__(17);
 } catch (e) {}
 
+/**
+ * We will load bxSlider
+ */
+__webpack_require__(18);
 /**
  * We'll load the axios HTTP library which allows us to easily issue requests
  * to our Laravel back-end. This library automatically handles sending the
  * CSRF token as a header based on the value of the "XSRF" token cookie.
  */
 
-window.axios = __webpack_require__(17);
+window.axios = __webpack_require__(20);
 
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
@@ -13961,7 +14034,7 @@ if (token) {
 // });
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, module) {var __WEBPACK_AMD_DEFINE_RESULT__;/**
@@ -31071,10 +31144,10 @@ if (token) {
   }
 }.call(this));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(15)(module)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(16)(module)))
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports) {
 
 module.exports = function(module) {
@@ -31102,7 +31175,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*!
@@ -35035,21 +35108,1453 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(18);
+/* WEBPACK VAR INJECTION */(function(setImmediate) {/*
+ * jQuery FlexSlider v2.7.1
+ * Copyright 2012 WooThemes
+ * Contributing Author: Tyler Smith
+ */
+;
+(function ($) {
+
+  var focused = true;
+
+  //FlexSlider: Object Instance
+  $.flexslider = function(el, options) {
+    var slider = $(el);
+
+    // making variables public
+
+    //if rtl value was not passed and html is in rtl..enable it by default.
+    if(typeof options.rtl=='undefined' && $('html').attr('dir')=='rtl'){
+      options.rtl=true;
+    }
+    slider.vars = $.extend({}, $.flexslider.defaults, options);
+
+    var namespace = slider.vars.namespace,
+        msGesture = window.navigator && window.navigator.msPointerEnabled && window.MSGesture,
+        touch = (( "ontouchstart" in window ) || msGesture || window.DocumentTouch && document instanceof DocumentTouch) && slider.vars.touch,
+        // deprecating this idea, as devices are being released with both of these events
+        eventType = "click touchend MSPointerUp keyup",
+        watchedEvent = "",
+        watchedEventClearTimer,
+        vertical = slider.vars.direction === "vertical",
+        reverse = slider.vars.reverse,
+        carousel = (slider.vars.itemWidth > 0),
+        fade = slider.vars.animation === "fade",
+        asNav = slider.vars.asNavFor !== "",
+        methods = {};
+
+    // Store a reference to the slider object
+    $.data(el, "flexslider", slider);
+
+    // Private slider methods
+    methods = {
+      init: function() {
+        slider.animating = false;
+        // Get current slide and make sure it is a number
+        slider.currentSlide = parseInt( ( slider.vars.startAt ? slider.vars.startAt : 0), 10 );
+        if ( isNaN( slider.currentSlide ) ) { slider.currentSlide = 0; }
+        slider.animatingTo = slider.currentSlide;
+        slider.atEnd = (slider.currentSlide === 0 || slider.currentSlide === slider.last);
+        slider.containerSelector = slider.vars.selector.substr(0,slider.vars.selector.search(' '));
+        slider.slides = $(slider.vars.selector, slider);
+        slider.container = $(slider.containerSelector, slider);
+        slider.count = slider.slides.length;
+        // SYNC:
+        slider.syncExists = $(slider.vars.sync).length > 0;
+        // SLIDE:
+        if (slider.vars.animation === "slide") { slider.vars.animation = "swing"; }
+        slider.prop = (vertical) ? "top" : ( slider.vars.rtl ? "marginRight" : "marginLeft" );
+        slider.args = {};
+        // SLIDESHOW:
+        slider.manualPause = false;
+        slider.stopped = false;
+        //PAUSE WHEN INVISIBLE
+        slider.started = false;
+        slider.startTimeout = null;
+        // TOUCH/USECSS:
+        slider.transitions = !slider.vars.video && !fade && slider.vars.useCSS && (function() {
+          var obj = document.createElement('div'),
+              props = ['perspectiveProperty', 'WebkitPerspective', 'MozPerspective', 'OPerspective', 'msPerspective'];
+          for (var i in props) {
+            if ( obj.style[ props[i] ] !== undefined ) {
+              slider.pfx = props[i].replace('Perspective','').toLowerCase();
+              slider.prop = "-" + slider.pfx + "-transform";
+              return true;
+            }
+          }
+          return false;
+        }());
+        slider.isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+        slider.ensureAnimationEnd = '';
+        // CONTROLSCONTAINER:
+        if (slider.vars.controlsContainer !== "") slider.controlsContainer = $(slider.vars.controlsContainer).length > 0 && $(slider.vars.controlsContainer);
+        // MANUAL:
+        if (slider.vars.manualControls !== "") slider.manualControls = $(slider.vars.manualControls).length > 0 && $(slider.vars.manualControls);
+
+        // CUSTOM DIRECTION NAV:
+        if (slider.vars.customDirectionNav !== "") slider.customDirectionNav = $(slider.vars.customDirectionNav).length === 2 && $(slider.vars.customDirectionNav);
+
+        // RANDOMIZE:
+        if (slider.vars.randomize) {
+          slider.slides.sort(function() { return (Math.round(Math.random())-0.5); });
+          slider.container.empty().append(slider.slides);
+        }
+
+        slider.doMath();
+
+        // INIT
+        slider.setup("init");
+
+        // CONTROLNAV:
+        if (slider.vars.controlNav) { methods.controlNav.setup(); }
+
+        // DIRECTIONNAV:
+        if (slider.vars.directionNav) { methods.directionNav.setup(); }
+
+        // KEYBOARD:
+        if (slider.vars.keyboard && ($(slider.containerSelector).length === 1 || slider.vars.multipleKeyboard)) {
+          $(document).bind('keyup', function(event) {
+            var keycode = event.keyCode;
+            if (!slider.animating && (keycode === 39 || keycode === 37)) {
+              var target = (slider.vars.rtl?
+                                ((keycode === 37) ? slider.getTarget('next') :
+                                (keycode === 39) ? slider.getTarget('prev') : false)
+                                :
+                                ((keycode === 39) ? slider.getTarget('next') :
+                                (keycode === 37) ? slider.getTarget('prev') : false)
+                                )
+                                ;
+              slider.flexAnimate(target, slider.vars.pauseOnAction);
+            }
+          });
+        }
+        // MOUSEWHEEL:
+        if (slider.vars.mousewheel) {
+          slider.bind('mousewheel', function(event, delta, deltaX, deltaY) {
+            event.preventDefault();
+            var target = (delta < 0) ? slider.getTarget('next') : slider.getTarget('prev');
+            slider.flexAnimate(target, slider.vars.pauseOnAction);
+          });
+        }
+
+        // PAUSEPLAY
+        if (slider.vars.pausePlay) { methods.pausePlay.setup(); }
+
+        //PAUSE WHEN INVISIBLE
+        if (slider.vars.slideshow && slider.vars.pauseInvisible) { methods.pauseInvisible.init(); }
+
+        // SLIDSESHOW
+        if (slider.vars.slideshow) {
+          if (slider.vars.pauseOnHover) {
+            slider.hover(function() {
+              if (!slider.manualPlay && !slider.manualPause) { slider.pause(); }
+            }, function() {
+              if (!slider.manualPause && !slider.manualPlay && !slider.stopped) { slider.play(); }
+            });
+          }
+          // initialize animation
+          //If we're visible, or we don't use PageVisibility API
+          if(!slider.vars.pauseInvisible || !methods.pauseInvisible.isHidden()) {
+            (slider.vars.initDelay > 0) ? slider.startTimeout = setTimeout(slider.play, slider.vars.initDelay) : slider.play();
+          }
+        }
+
+        // ASNAV:
+        if (asNav) { methods.asNav.setup(); }
+
+        // TOUCH
+        if (touch && slider.vars.touch) { methods.touch(); }
+
+        // FADE&&SMOOTHHEIGHT || SLIDE:
+        if (!fade || (fade && slider.vars.smoothHeight)) { $(window).bind("resize orientationchange focus", methods.resize); }
+
+        slider.find("img").attr("draggable", "false");
+
+        // API: start() Callback
+        setTimeout(function(){
+          slider.vars.start(slider);
+        }, 200);
+      },
+      asNav: {
+        setup: function() {
+          slider.asNav = true;
+          slider.animatingTo = Math.floor(slider.currentSlide/slider.move);
+          slider.currentItem = slider.currentSlide;
+          slider.slides.removeClass(namespace + "active-slide").eq(slider.currentItem).addClass(namespace + "active-slide");
+          if(!msGesture){
+              slider.slides.on(eventType, function(e){
+                e.preventDefault();
+                var $slide = $(this),
+                    target = $slide.index();
+                var posFromX;
+                if(slider.vars.rtl){
+                  posFromX = -1*($slide.offset().right - $(slider).scrollLeft()); // Find position of slide relative to right of slider container
+                }
+                else
+                {
+                  posFromX = $slide.offset().left - $(slider).scrollLeft(); // Find position of slide relative to left of slider container
+                }
+                if( posFromX <= 0 && $slide.hasClass( namespace + 'active-slide' ) ) {
+                  slider.flexAnimate(slider.getTarget("prev"), true);
+                } else if (!$(slider.vars.asNavFor).data('flexslider').animating && !$slide.hasClass(namespace + "active-slide")) {
+                  slider.direction = (slider.currentItem < target) ? "next" : "prev";
+                  slider.flexAnimate(target, slider.vars.pauseOnAction, false, true, true);
+                }
+              });
+          }else{
+              el._slider = slider;
+              slider.slides.each(function (){
+                  var that = this;
+                  that._gesture = new MSGesture();
+                  that._gesture.target = that;
+                  that.addEventListener("MSPointerDown", function (e){
+                      e.preventDefault();
+                      if(e.currentTarget._gesture) {
+                        e.currentTarget._gesture.addPointer(e.pointerId);
+                      }
+                  }, false);
+                  that.addEventListener("MSGestureTap", function (e){
+                      e.preventDefault();
+                      var $slide = $(this),
+                          target = $slide.index();
+                      if (!$(slider.vars.asNavFor).data('flexslider').animating && !$slide.hasClass('active')) {
+                          slider.direction = (slider.currentItem < target) ? "next" : "prev";
+                          slider.flexAnimate(target, slider.vars.pauseOnAction, false, true, true);
+                      }
+                  });
+              });
+          }
+        }
+      },
+      controlNav: {
+        setup: function() {
+          if (!slider.manualControls) {
+            methods.controlNav.setupPaging();
+          } else { // MANUALCONTROLS:
+            methods.controlNav.setupManual();
+          }
+        },
+        setupPaging: function() {
+          var type = (slider.vars.controlNav === "thumbnails") ? 'control-thumbs' : 'control-paging',
+              j = 1,
+              item,
+              slide;
+
+          slider.controlNavScaffold = $('<ol class="'+ namespace + 'control-nav ' + namespace + type + '"></ol>');
+
+          if (slider.pagingCount > 1) {
+            for (var i = 0; i < slider.pagingCount; i++) {
+              slide = slider.slides.eq(i);
+              if ( undefined === slide.attr( 'data-thumb-alt' ) ) { slide.attr( 'data-thumb-alt', '' ); }
+              var altText = ( '' !== slide.attr( 'data-thumb-alt' ) ) ? altText = ' alt="' + slide.attr( 'data-thumb-alt' ) + '"' : '';
+              item = (slider.vars.controlNav === "thumbnails") ? '<img src="' + slide.attr( 'data-thumb' ) + '"' + altText + '/>' : '<a href="#">' + j + '</a>';
+              if ( 'thumbnails' === slider.vars.controlNav && true === slider.vars.thumbCaptions ) {
+                var captn = slide.attr( 'data-thumbcaption' );
+                if ( '' !== captn && undefined !== captn ) { item += '<span class="' + namespace + 'caption">' + captn + '</span>'; }
+              }
+              slider.controlNavScaffold.append('<li>' + item + '</li>');
+              j++;
+            }
+          }
+
+          // CONTROLSCONTAINER:
+          (slider.controlsContainer) ? $(slider.controlsContainer).append(slider.controlNavScaffold) : slider.append(slider.controlNavScaffold);
+          methods.controlNav.set();
+
+          methods.controlNav.active();
+
+          slider.controlNavScaffold.delegate('a, img', eventType, function(event) {
+            event.preventDefault();
+
+            if (watchedEvent === "" || watchedEvent === event.type) {
+              var $this = $(this),
+                  target = slider.controlNav.index($this);
+
+              if (!$this.hasClass(namespace + 'active')) {
+                slider.direction = (target > slider.currentSlide) ? "next" : "prev";
+                slider.flexAnimate(target, slider.vars.pauseOnAction);
+              }
+            }
+
+            // setup flags to prevent event duplication
+            if (watchedEvent === "") {
+              watchedEvent = event.type;
+            }
+            methods.setToClearWatchedEvent();
+
+          });
+        },
+        setupManual: function() {
+          slider.controlNav = slider.manualControls;
+          methods.controlNav.active();
+
+          slider.controlNav.bind(eventType, function(event) {
+            event.preventDefault();
+
+            if (watchedEvent === "" || watchedEvent === event.type) {
+              var $this = $(this),
+                  target = slider.controlNav.index($this);
+
+              if (!$this.hasClass(namespace + 'active')) {
+                (target > slider.currentSlide) ? slider.direction = "next" : slider.direction = "prev";
+                slider.flexAnimate(target, slider.vars.pauseOnAction);
+              }
+            }
+
+            // setup flags to prevent event duplication
+            if (watchedEvent === "") {
+              watchedEvent = event.type;
+            }
+            methods.setToClearWatchedEvent();
+          });
+        },
+        set: function() {
+          var selector = (slider.vars.controlNav === "thumbnails") ? 'img' : 'a';
+          slider.controlNav = $('.' + namespace + 'control-nav li ' + selector, (slider.controlsContainer) ? slider.controlsContainer : slider);
+        },
+        active: function() {
+          slider.controlNav.removeClass(namespace + "active").eq(slider.animatingTo).addClass(namespace + "active");
+        },
+        update: function(action, pos) {
+          if (slider.pagingCount > 1 && action === "add") {
+            slider.controlNavScaffold.append($('<li><a href="#">' + slider.count + '</a></li>'));
+          } else if (slider.pagingCount === 1) {
+            slider.controlNavScaffold.find('li').remove();
+          } else {
+            slider.controlNav.eq(pos).closest('li').remove();
+          }
+          methods.controlNav.set();
+          (slider.pagingCount > 1 && slider.pagingCount !== slider.controlNav.length) ? slider.update(pos, action) : methods.controlNav.active();
+        }
+      },
+      directionNav: {
+        setup: function() {
+          var directionNavScaffold = $('<ul class="' + namespace + 'direction-nav"><li class="' + namespace + 'nav-prev"><a class="' + namespace + 'prev" href="#">' + slider.vars.prevText + '</a></li><li class="' + namespace + 'nav-next"><a class="' + namespace + 'next" href="#">' + slider.vars.nextText + '</a></li></ul>');
+
+          // CUSTOM DIRECTION NAV:
+          if (slider.customDirectionNav) {
+            slider.directionNav = slider.customDirectionNav;
+          // CONTROLSCONTAINER:
+          } else if (slider.controlsContainer) {
+            $(slider.controlsContainer).append(directionNavScaffold);
+            slider.directionNav = $('.' + namespace + 'direction-nav li a', slider.controlsContainer);
+          } else {
+            slider.append(directionNavScaffold);
+            slider.directionNav = $('.' + namespace + 'direction-nav li a', slider);
+          }
+
+          methods.directionNav.update();
+
+          slider.directionNav.bind(eventType, function(event) {
+            event.preventDefault();
+            var target;
+
+            if (watchedEvent === "" || watchedEvent === event.type) {
+              target = ($(this).hasClass(namespace + 'next')) ? slider.getTarget('next') : slider.getTarget('prev');
+              slider.flexAnimate(target, slider.vars.pauseOnAction);
+            }
+
+            // setup flags to prevent event duplication
+            if (watchedEvent === "") {
+              watchedEvent = event.type;
+            }
+            methods.setToClearWatchedEvent();
+          });
+        },
+        update: function() {
+          var disabledClass = namespace + 'disabled';
+          if (slider.pagingCount === 1) {
+            slider.directionNav.addClass(disabledClass).attr('tabindex', '-1');
+          } else if (!slider.vars.animationLoop) {
+            if (slider.animatingTo === 0) {
+              slider.directionNav.removeClass(disabledClass).filter('.' + namespace + "prev").addClass(disabledClass).attr('tabindex', '-1');
+            } else if (slider.animatingTo === slider.last) {
+              slider.directionNav.removeClass(disabledClass).filter('.' + namespace + "next").addClass(disabledClass).attr('tabindex', '-1');
+            } else {
+              slider.directionNav.removeClass(disabledClass).removeAttr('tabindex');
+            }
+          } else {
+            slider.directionNav.removeClass(disabledClass).removeAttr('tabindex');
+          }
+        }
+      },
+      pausePlay: {
+        setup: function() {
+          var pausePlayScaffold = $('<div class="' + namespace + 'pauseplay"><a href="#"></a></div>');
+
+          // CONTROLSCONTAINER:
+          if (slider.controlsContainer) {
+            slider.controlsContainer.append(pausePlayScaffold);
+            slider.pausePlay = $('.' + namespace + 'pauseplay a', slider.controlsContainer);
+          } else {
+            slider.append(pausePlayScaffold);
+            slider.pausePlay = $('.' + namespace + 'pauseplay a', slider);
+          }
+
+          methods.pausePlay.update((slider.vars.slideshow) ? namespace + 'pause' : namespace + 'play');
+
+          slider.pausePlay.bind(eventType, function(event) {
+            event.preventDefault();
+
+            if (watchedEvent === "" || watchedEvent === event.type) {
+              if ($(this).hasClass(namespace + 'pause')) {
+                slider.manualPause = true;
+                slider.manualPlay = false;
+                slider.pause();
+              } else {
+                slider.manualPause = false;
+                slider.manualPlay = true;
+                slider.play();
+              }
+            }
+
+            // setup flags to prevent event duplication
+            if (watchedEvent === "") {
+              watchedEvent = event.type;
+            }
+            methods.setToClearWatchedEvent();
+          });
+        },
+        update: function(state) {
+          (state === "play") ? slider.pausePlay.removeClass(namespace + 'pause').addClass(namespace + 'play').html(slider.vars.playText) : slider.pausePlay.removeClass(namespace + 'play').addClass(namespace + 'pause').html(slider.vars.pauseText);
+        }
+      },
+      touch: function() {
+        var startX,
+          startY,
+          offset,
+          cwidth,
+          dx,
+          startT,
+          onTouchStart,
+          onTouchMove,
+          onTouchEnd,
+          scrolling = false,
+          localX = 0,
+          localY = 0,
+          accDx = 0;
+
+        if(!msGesture){
+            onTouchStart = function(e) {
+              if (slider.animating) {
+                e.preventDefault();
+              } else if ( ( window.navigator.msPointerEnabled ) || e.touches.length === 1 ) {
+                slider.pause();
+                // CAROUSEL:
+                cwidth = (vertical) ? slider.h : slider. w;
+                startT = Number(new Date());
+                // CAROUSEL:
+
+                // Local vars for X and Y points.
+                localX = e.touches[0].pageX;
+                localY = e.touches[0].pageY;
+
+                offset = (carousel && reverse && slider.animatingTo === slider.last) ? 0 :
+                         (carousel && reverse) ? slider.limit - (((slider.itemW + slider.vars.itemMargin) * slider.move) * slider.animatingTo) :
+                         (carousel && slider.currentSlide === slider.last) ? slider.limit :
+                         (carousel) ? ((slider.itemW + slider.vars.itemMargin) * slider.move) * slider.currentSlide :
+                         (reverse) ? (slider.last - slider.currentSlide + slider.cloneOffset) * cwidth : (slider.currentSlide + slider.cloneOffset) * cwidth;
+                startX = (vertical) ? localY : localX;
+                startY = (vertical) ? localX : localY;
+                el.addEventListener('touchmove', onTouchMove, false);
+                el.addEventListener('touchend', onTouchEnd, false);
+              }
+            };
+
+            onTouchMove = function(e) {
+              // Local vars for X and Y points.
+
+              localX = e.touches[0].pageX;
+              localY = e.touches[0].pageY;
+
+              dx = (vertical) ? startX - localY : (slider.vars.rtl?-1:1)*(startX - localX);
+              scrolling = (vertical) ? (Math.abs(dx) < Math.abs(localX - startY)) : (Math.abs(dx) < Math.abs(localY - startY));
+              var fxms = 500;
+
+              if ( ! scrolling || Number( new Date() ) - startT > fxms ) {
+                e.preventDefault();
+                if (!fade && slider.transitions) {
+                  if (!slider.vars.animationLoop) {
+                    dx = dx/((slider.currentSlide === 0 && dx < 0 || slider.currentSlide === slider.last && dx > 0) ? (Math.abs(dx)/cwidth+2) : 1);
+                  }
+                  slider.setProps(offset + dx, "setTouch");
+                }
+              }
+            };
+
+            onTouchEnd = function(e) {
+              // finish the touch by undoing the touch session
+              el.removeEventListener('touchmove', onTouchMove, false);
+
+              if (slider.animatingTo === slider.currentSlide && !scrolling && !(dx === null)) {
+                var updateDx = (reverse) ? -dx : dx,
+                    target = (updateDx > 0) ? slider.getTarget('next') : slider.getTarget('prev');
+
+                if (slider.canAdvance(target) && (Number(new Date()) - startT < 550 && Math.abs(updateDx) > 50 || Math.abs(updateDx) > cwidth/2)) {
+                  slider.flexAnimate(target, slider.vars.pauseOnAction);
+                } else {
+                  if (!fade) { slider.flexAnimate(slider.currentSlide, slider.vars.pauseOnAction, true); }
+                }
+              }
+              el.removeEventListener('touchend', onTouchEnd, false);
+
+              startX = null;
+              startY = null;
+              dx = null;
+              offset = null;
+            };
+
+            el.addEventListener('touchstart', onTouchStart, false);
+        }else{
+            el.style.msTouchAction = "none";
+            el._gesture = new MSGesture();
+            el._gesture.target = el;
+            el.addEventListener("MSPointerDown", onMSPointerDown, false);
+            el._slider = slider;
+            el.addEventListener("MSGestureChange", onMSGestureChange, false);
+            el.addEventListener("MSGestureEnd", onMSGestureEnd, false);
+
+            function onMSPointerDown(e){
+                e.stopPropagation();
+                if (slider.animating) {
+                    e.preventDefault();
+                }else{
+                    slider.pause();
+                    el._gesture.addPointer(e.pointerId);
+                    accDx = 0;
+                    cwidth = (vertical) ? slider.h : slider. w;
+                    startT = Number(new Date());
+                    // CAROUSEL:
+
+                    offset = (carousel && reverse && slider.animatingTo === slider.last) ? 0 :
+                        (carousel && reverse) ? slider.limit - (((slider.itemW + slider.vars.itemMargin) * slider.move) * slider.animatingTo) :
+                            (carousel && slider.currentSlide === slider.last) ? slider.limit :
+                                (carousel) ? ((slider.itemW + slider.vars.itemMargin) * slider.move) * slider.currentSlide :
+                                    (reverse) ? (slider.last - slider.currentSlide + slider.cloneOffset) * cwidth : (slider.currentSlide + slider.cloneOffset) * cwidth;
+                }
+            }
+
+            function onMSGestureChange(e) {
+                e.stopPropagation();
+                var slider = e.target._slider;
+                if(!slider){
+                    return;
+                }
+                var transX = -e.translationX,
+                    transY = -e.translationY;
+
+                //Accumulate translations.
+                accDx = accDx + ((vertical) ? transY : transX);
+                dx = (slider.vars.rtl?-1:1)*accDx;
+                scrolling = (vertical) ? (Math.abs(accDx) < Math.abs(-transX)) : (Math.abs(accDx) < Math.abs(-transY));
+
+                if(e.detail === e.MSGESTURE_FLAG_INERTIA){
+                    setImmediate(function (){
+                        el._gesture.stop();
+                    });
+
+                    return;
+                }
+
+                if (!scrolling || Number(new Date()) - startT > 500) {
+                    e.preventDefault();
+                    if (!fade && slider.transitions) {
+                        if (!slider.vars.animationLoop) {
+                            dx = accDx / ((slider.currentSlide === 0 && accDx < 0 || slider.currentSlide === slider.last && accDx > 0) ? (Math.abs(accDx) / cwidth + 2) : 1);
+                        }
+                        slider.setProps(offset + dx, "setTouch");
+                    }
+                }
+            }
+
+            function onMSGestureEnd(e) {
+                e.stopPropagation();
+                var slider = e.target._slider;
+                if(!slider){
+                    return;
+                }
+                if (slider.animatingTo === slider.currentSlide && !scrolling && !(dx === null)) {
+                    var updateDx = (reverse) ? -dx : dx,
+                        target = (updateDx > 0) ? slider.getTarget('next') : slider.getTarget('prev');
+
+                    if (slider.canAdvance(target) && (Number(new Date()) - startT < 550 && Math.abs(updateDx) > 50 || Math.abs(updateDx) > cwidth/2)) {
+                        slider.flexAnimate(target, slider.vars.pauseOnAction);
+                    } else {
+                        if (!fade) { slider.flexAnimate(slider.currentSlide, slider.vars.pauseOnAction, true); }
+                    }
+                }
+
+                startX = null;
+                startY = null;
+                dx = null;
+                offset = null;
+                accDx = 0;
+            }
+        }
+      },
+      resize: function() {
+        if (!slider.animating && slider.is(':visible')) {
+          if (!carousel) { slider.doMath(); }
+
+          if (fade) {
+            // SMOOTH HEIGHT:
+            methods.smoothHeight();
+          } else if (carousel) { //CAROUSEL:
+            slider.slides.width(slider.computedW);
+            slider.update(slider.pagingCount);
+            slider.setProps();
+          }
+          else if (vertical) { //VERTICAL:
+            slider.viewport.height(slider.h);
+            slider.setProps(slider.h, "setTotal");
+          } else {
+            // SMOOTH HEIGHT:
+            if (slider.vars.smoothHeight) { methods.smoothHeight(); }
+            slider.newSlides.width(slider.computedW);
+            slider.setProps(slider.computedW, "setTotal");
+          }
+        }
+      },
+      smoothHeight: function(dur) {
+        if (!vertical || fade) {
+          var $obj = (fade) ? slider : slider.viewport;
+          (dur) ? $obj.animate({"height": slider.slides.eq(slider.animatingTo).innerHeight()}, dur) : $obj.innerHeight(slider.slides.eq(slider.animatingTo).innerHeight());
+        }
+      },
+      sync: function(action) {
+        var $obj = $(slider.vars.sync).data("flexslider"),
+            target = slider.animatingTo;
+
+        switch (action) {
+          case "animate": $obj.flexAnimate(target, slider.vars.pauseOnAction, false, true); break;
+          case "play": if (!$obj.playing && !$obj.asNav) { $obj.play(); } break;
+          case "pause": $obj.pause(); break;
+        }
+      },
+      uniqueID: function($clone) {
+        // Append _clone to current level and children elements with id attributes
+        $clone.filter( '[id]' ).add($clone.find( '[id]' )).each(function() {
+          var $this = $(this);
+          $this.attr( 'id', $this.attr( 'id' ) + '_clone' );
+        });
+        return $clone;
+      },
+      pauseInvisible: {
+        visProp: null,
+        init: function() {
+          var visProp = methods.pauseInvisible.getHiddenProp();
+          if (visProp) {
+            var evtname = visProp.replace(/[H|h]idden/,'') + 'visibilitychange';
+            document.addEventListener(evtname, function() {
+              if (methods.pauseInvisible.isHidden()) {
+                if(slider.startTimeout) {
+                  clearTimeout(slider.startTimeout); //If clock is ticking, stop timer and prevent from starting while invisible
+                } else {
+                  slider.pause(); //Or just pause
+                }
+              }
+              else {
+                if(slider.started) {
+                  slider.play(); //Initiated before, just play
+                } else {
+                  if (slider.vars.initDelay > 0) {
+                    setTimeout(slider.play, slider.vars.initDelay);
+                  } else {
+                    slider.play(); //Didn't init before: simply init or wait for it
+                  }
+                }
+              }
+            });
+          }
+        },
+        isHidden: function() {
+          var prop = methods.pauseInvisible.getHiddenProp();
+          if (!prop) {
+            return false;
+          }
+          return document[prop];
+        },
+        getHiddenProp: function() {
+          var prefixes = ['webkit','moz','ms','o'];
+          // if 'hidden' is natively supported just return it
+          if ('hidden' in document) {
+            return 'hidden';
+          }
+          // otherwise loop over all the known prefixes until we find one
+          for ( var i = 0; i < prefixes.length; i++ ) {
+              if ((prefixes[i] + 'Hidden') in document) {
+                return prefixes[i] + 'Hidden';
+              }
+          }
+          // otherwise it's not supported
+          return null;
+        }
+      },
+      setToClearWatchedEvent: function() {
+        clearTimeout(watchedEventClearTimer);
+        watchedEventClearTimer = setTimeout(function() {
+          watchedEvent = "";
+        }, 3000);
+      }
+    };
+
+    // public methods
+    slider.flexAnimate = function(target, pause, override, withSync, fromNav) {
+      if (!slider.vars.animationLoop && target !== slider.currentSlide) {
+        slider.direction = (target > slider.currentSlide) ? "next" : "prev";
+      }
+
+      if (asNav && slider.pagingCount === 1) slider.direction = (slider.currentItem < target) ? "next" : "prev";
+
+      if (!slider.animating && (slider.canAdvance(target, fromNav) || override) && slider.is(":visible")) {
+        if (asNav && withSync) {
+          var master = $(slider.vars.asNavFor).data('flexslider');
+          slider.atEnd = target === 0 || target === slider.count - 1;
+          master.flexAnimate(target, true, false, true, fromNav);
+          slider.direction = (slider.currentItem < target) ? "next" : "prev";
+          master.direction = slider.direction;
+
+          if (Math.ceil((target + 1)/slider.visible) - 1 !== slider.currentSlide && target !== 0) {
+            slider.currentItem = target;
+            slider.slides.removeClass(namespace + "active-slide").eq(target).addClass(namespace + "active-slide");
+            target = Math.floor(target/slider.visible);
+          } else {
+            slider.currentItem = target;
+            slider.slides.removeClass(namespace + "active-slide").eq(target).addClass(namespace + "active-slide");
+            return false;
+          }
+        }
+
+        slider.animating = true;
+        slider.animatingTo = target;
+
+        // SLIDESHOW:
+        if (pause) { slider.pause(); }
+
+        // API: before() animation Callback
+        slider.vars.before(slider);
+
+        // SYNC:
+        if (slider.syncExists && !fromNav) { methods.sync("animate"); }
+
+        // CONTROLNAV
+        if (slider.vars.controlNav) { methods.controlNav.active(); }
+
+        // !CAROUSEL:
+        // CANDIDATE: slide active class (for add/remove slide)
+        if (!carousel) { slider.slides.removeClass(namespace + 'active-slide').eq(target).addClass(namespace + 'active-slide'); }
+
+        // INFINITE LOOP:
+        // CANDIDATE: atEnd
+        slider.atEnd = target === 0 || target === slider.last;
+
+        // DIRECTIONNAV:
+        if (slider.vars.directionNav) { methods.directionNav.update(); }
+
+        if (target === slider.last) {
+          // API: end() of cycle Callback
+          slider.vars.end(slider);
+          // SLIDESHOW && !INFINITE LOOP:
+          if (!slider.vars.animationLoop) { slider.pause(); }
+        }
+
+        // SLIDE:
+        if (!fade) {
+          var dimension = (vertical) ? slider.slides.filter(':first').height() : slider.computedW,
+              margin, slideString, calcNext;
+
+          // INFINITE LOOP / REVERSE:
+          if (carousel) {
+            margin = slider.vars.itemMargin;
+            calcNext = ((slider.itemW + margin) * slider.move) * slider.animatingTo;
+            slideString = (calcNext > slider.limit && slider.visible !== 1) ? slider.limit : calcNext;
+          } else if (slider.currentSlide === 0 && target === slider.count - 1 && slider.vars.animationLoop && slider.direction !== "next") {
+            slideString = (reverse) ? (slider.count + slider.cloneOffset) * dimension : 0;
+          } else if (slider.currentSlide === slider.last && target === 0 && slider.vars.animationLoop && slider.direction !== "prev") {
+            slideString = (reverse) ? 0 : (slider.count + 1) * dimension;
+          } else {
+            slideString = (reverse) ? ((slider.count - 1) - target + slider.cloneOffset) * dimension : (target + slider.cloneOffset) * dimension;
+          }
+          slider.setProps(slideString, "", slider.vars.animationSpeed);
+          if (slider.transitions) {
+            if (!slider.vars.animationLoop || !slider.atEnd) {
+              slider.animating = false;
+              slider.currentSlide = slider.animatingTo;
+            }
+
+            // Unbind previous transitionEnd events and re-bind new transitionEnd event
+            slider.container.unbind("webkitTransitionEnd transitionend");
+            slider.container.bind("webkitTransitionEnd transitionend", function() {
+              clearTimeout(slider.ensureAnimationEnd);
+              slider.wrapup(dimension);
+            });
+
+            // Insurance for the ever-so-fickle transitionEnd event
+            clearTimeout(slider.ensureAnimationEnd);
+            slider.ensureAnimationEnd = setTimeout(function() {
+              slider.wrapup(dimension);
+            }, slider.vars.animationSpeed + 100);
+
+          } else {
+            slider.container.animate(slider.args, slider.vars.animationSpeed, slider.vars.easing, function(){
+              slider.wrapup(dimension);
+            });
+          }
+        } else { // FADE:
+          if (!touch) {
+            slider.slides.eq(slider.currentSlide).css({"zIndex": 1}).animate({"opacity": 0}, slider.vars.animationSpeed, slider.vars.easing);
+            slider.slides.eq(target).css({"zIndex": 2}).animate({"opacity": 1}, slider.vars.animationSpeed, slider.vars.easing, slider.wrapup);
+          } else {
+            slider.slides.eq(slider.currentSlide).css({ "opacity": 0, "zIndex": 1 });
+            slider.slides.eq(target).css({ "opacity": 1, "zIndex": 2 });
+            slider.wrapup(dimension);
+          }
+        }
+        // SMOOTH HEIGHT:
+        if (slider.vars.smoothHeight) { methods.smoothHeight(slider.vars.animationSpeed); }
+      }
+    };
+    slider.wrapup = function(dimension) {
+      // SLIDE:
+      if (!fade && !carousel) {
+        if (slider.currentSlide === 0 && slider.animatingTo === slider.last && slider.vars.animationLoop) {
+          slider.setProps(dimension, "jumpEnd");
+        } else if (slider.currentSlide === slider.last && slider.animatingTo === 0 && slider.vars.animationLoop) {
+          slider.setProps(dimension, "jumpStart");
+        }
+      }
+      slider.animating = false;
+      slider.currentSlide = slider.animatingTo;
+      // API: after() animation Callback
+      slider.vars.after(slider);
+    };
+
+    // SLIDESHOW:
+    slider.animateSlides = function() {
+      if (!slider.animating && focused ) { slider.flexAnimate(slider.getTarget("next")); }
+    };
+    // SLIDESHOW:
+    slider.pause = function() {
+      clearInterval(slider.animatedSlides);
+      slider.animatedSlides = null;
+      slider.playing = false;
+      // PAUSEPLAY:
+      if (slider.vars.pausePlay) { methods.pausePlay.update("play"); }
+      // SYNC:
+      if (slider.syncExists) { methods.sync("pause"); }
+    };
+    // SLIDESHOW:
+    slider.play = function() {
+      if (slider.playing) { clearInterval(slider.animatedSlides); }
+      slider.animatedSlides = slider.animatedSlides || setInterval(slider.animateSlides, slider.vars.slideshowSpeed);
+      slider.started = slider.playing = true;
+      // PAUSEPLAY:
+      if (slider.vars.pausePlay) { methods.pausePlay.update("pause"); }
+      // SYNC:
+      if (slider.syncExists) { methods.sync("play"); }
+    };
+    // STOP:
+    slider.stop = function () {
+      slider.pause();
+      slider.stopped = true;
+    };
+    slider.canAdvance = function(target, fromNav) {
+      // ASNAV:
+      var last = (asNav) ? slider.pagingCount - 1 : slider.last;
+      return (fromNav) ? true :
+             (asNav && slider.currentItem === slider.count - 1 && target === 0 && slider.direction === "prev") ? true :
+             (asNav && slider.currentItem === 0 && target === slider.pagingCount - 1 && slider.direction !== "next") ? false :
+             (target === slider.currentSlide && !asNav) ? false :
+             (slider.vars.animationLoop) ? true :
+             (slider.atEnd && slider.currentSlide === 0 && target === last && slider.direction !== "next") ? false :
+             (slider.atEnd && slider.currentSlide === last && target === 0 && slider.direction === "next") ? false :
+             true;
+    };
+    slider.getTarget = function(dir) {
+      slider.direction = dir;
+      if (dir === "next") {
+        return (slider.currentSlide === slider.last) ? 0 : slider.currentSlide + 1;
+      } else {
+        return (slider.currentSlide === 0) ? slider.last : slider.currentSlide - 1;
+      }
+    };
+
+    // SLIDE:
+    slider.setProps = function(pos, special, dur) {
+      var target = (function() {
+        var posCheck = (pos) ? pos : ((slider.itemW + slider.vars.itemMargin) * slider.move) * slider.animatingTo,
+            posCalc = (function() {
+              if (carousel) {
+                return (special === "setTouch") ? pos :
+                       (reverse && slider.animatingTo === slider.last) ? 0 :
+                       (reverse) ? slider.limit - (((slider.itemW + slider.vars.itemMargin) * slider.move) * slider.animatingTo) :
+                       (slider.animatingTo === slider.last) ? slider.limit : posCheck;
+              } else {
+                switch (special) {
+                  case "setTotal": return (reverse) ? ((slider.count - 1) - slider.currentSlide + slider.cloneOffset) * pos : (slider.currentSlide + slider.cloneOffset) * pos;
+                  case "setTouch": return (reverse) ? pos : pos;
+                  case "jumpEnd": return (reverse) ? pos : slider.count * pos;
+                  case "jumpStart": return (reverse) ? slider.count * pos : pos;
+                  default: return pos;
+                }
+              }
+            }());
+
+            return (posCalc * ((slider.vars.rtl)?1:-1)) + "px";
+          }());
+
+      if (slider.transitions) {
+        if (slider.isFirefox) {
+          target = (vertical) ? "translate3d(0," + target + ",0)" : "translate3d(" + (parseInt(target)+'px') + ",0,0)";
+        } else {
+          target = (vertical) ? "translate3d(0," + target + ",0)" : "translate3d(" + ((slider.vars.rtl?-1:1)*parseInt(target)+'px') + ",0,0)";
+        }
+        dur = (dur !== undefined) ? (dur/1000) + "s" : "0s";
+        slider.container.css("-" + slider.pfx + "-transition-duration", dur);
+         slider.container.css("transition-duration", dur);
+      }
+
+      slider.args[slider.prop] = target;
+      if (slider.transitions || dur === undefined) { slider.container.css(slider.args); }
+
+      slider.container.css('transform',target);
+    };
+
+    slider.setup = function(type) {
+      // SLIDE:
+      if (!fade) {
+        var sliderOffset, arr;
+
+        if (type === "init") {
+          slider.viewport = $('<div class="' + namespace + 'viewport"></div>').css({"overflow": "hidden", "position": "relative"}).appendTo(slider).append(slider.container);
+          // INFINITE LOOP:
+          slider.cloneCount = 0;
+          slider.cloneOffset = 0;
+          // REVERSE:
+          if (reverse) {
+            arr = $.makeArray(slider.slides).reverse();
+            slider.slides = $(arr);
+            slider.container.empty().append(slider.slides);
+          }
+        }
+        // INFINITE LOOP && !CAROUSEL:
+        if (slider.vars.animationLoop && !carousel) {
+          slider.cloneCount = 2;
+          slider.cloneOffset = 1;
+          // clear out old clones
+          if (type !== "init") { slider.container.find('.clone').remove(); }
+          slider.container.append(methods.uniqueID(slider.slides.first().clone().addClass('clone')).attr('aria-hidden', 'true'))
+                          .prepend(methods.uniqueID(slider.slides.last().clone().addClass('clone')).attr('aria-hidden', 'true'));
+        }
+        slider.newSlides = $(slider.vars.selector, slider);
+
+        sliderOffset = (reverse) ? slider.count - 1 - slider.currentSlide + slider.cloneOffset : slider.currentSlide + slider.cloneOffset;
+        // VERTICAL:
+        if (vertical && !carousel) {
+          slider.container.height((slider.count + slider.cloneCount) * 200 + "%").css("position", "absolute").width("100%");
+          setTimeout(function(){
+            slider.newSlides.css({"display": "block"});
+            slider.doMath();
+            slider.viewport.height(slider.h);
+            slider.setProps(sliderOffset * slider.h, "init");
+          }, (type === "init") ? 100 : 0);
+        } else {
+          slider.container.width((slider.count + slider.cloneCount) * 200 + "%");
+          slider.setProps(sliderOffset * slider.computedW, "init");
+          setTimeout(function(){
+            slider.doMath();
+          if(slider.vars.rtl){
+            if (slider.isFirefox) {
+              slider.newSlides.css({"width": slider.computedW, "marginRight" : slider.computedM, "float": "right", "display": "block"});
+            } else {
+              slider.newSlides.css({"width": slider.computedW, "marginRight" : slider.computedM, "float": "left", "display": "block"});
+            }
+              
+           }
+            else{
+              slider.newSlides.css({"width": slider.computedW, "marginRight" : slider.computedM, "float": "left", "display": "block"});
+            }
+            // SMOOTH HEIGHT:
+            if (slider.vars.smoothHeight) { methods.smoothHeight(); }
+          }, (type === "init") ? 100 : 0);
+        }
+      } else { // FADE:
+        if(slider.vars.rtl){
+          slider.slides.css({"width": "100%", "float": 'right', "marginLeft": "-100%", "position": "relative"});
+        }
+        else{
+          slider.slides.css({"width": "100%", "float": 'left', "marginRight": "-100%", "position": "relative"});
+        }
+        if (type === "init") {
+          if (!touch) {
+            //slider.slides.eq(slider.currentSlide).fadeIn(slider.vars.animationSpeed, slider.vars.easing);
+            if (slider.vars.fadeFirstSlide == false) {
+              slider.slides.css({ "opacity": 0, "display": "block", "zIndex": 1 }).eq(slider.currentSlide).css({"zIndex": 2}).css({"opacity": 1});
+            } else {
+              slider.slides.css({ "opacity": 0, "display": "block", "zIndex": 1 }).eq(slider.currentSlide).css({"zIndex": 2}).animate({"opacity": 1},slider.vars.animationSpeed,slider.vars.easing);
+            }
+          } else {
+            slider.slides.css({ "opacity": 0, "display": "block", "webkitTransition": "opacity " + slider.vars.animationSpeed / 1000 + "s ease", "zIndex": 1 }).eq(slider.currentSlide).css({ "opacity": 1, "zIndex": 2});
+          }
+        }
+        // SMOOTH HEIGHT:
+        if (slider.vars.smoothHeight) { methods.smoothHeight(); }
+      }
+      // !CAROUSEL:
+      // CANDIDATE: active slide
+      if (!carousel) { slider.slides.removeClass(namespace + "active-slide").eq(slider.currentSlide).addClass(namespace + "active-slide"); }
+
+      //FlexSlider: init() Callback
+      slider.vars.init(slider);
+    };
+
+    slider.doMath = function() {
+      var slide = slider.slides.first(),
+          slideMargin = slider.vars.itemMargin,
+          minItems = slider.vars.minItems,
+          maxItems = slider.vars.maxItems;
+
+      slider.w = (slider.viewport===undefined) ? slider.width() : slider.viewport.width();
+      if (slider.isFirefox) { slider.w = slider.width(); }
+      slider.h = slide.height();
+      slider.boxPadding = slide.outerWidth() - slide.width();
+
+      // CAROUSEL:
+      if (carousel) {
+        slider.itemT = slider.vars.itemWidth + slideMargin;
+        slider.itemM = slideMargin;
+        slider.minW = (minItems) ? minItems * slider.itemT : slider.w;
+        slider.maxW = (maxItems) ? (maxItems * slider.itemT) - slideMargin : slider.w;
+        slider.itemW = (slider.minW > slider.w) ? (slider.w - (slideMargin * (minItems - 1)))/minItems :
+                       (slider.maxW < slider.w) ? (slider.w - (slideMargin * (maxItems - 1)))/maxItems :
+                       (slider.vars.itemWidth > slider.w) ? slider.w : slider.vars.itemWidth;
+
+        slider.visible = Math.floor(slider.w/(slider.itemW));
+        slider.move = (slider.vars.move > 0 && slider.vars.move < slider.visible ) ? slider.vars.move : slider.visible;
+        slider.pagingCount = Math.ceil(((slider.count - slider.visible)/slider.move) + 1);
+        slider.last =  slider.pagingCount - 1;
+        slider.limit = (slider.pagingCount === 1) ? 0 :
+                       (slider.vars.itemWidth > slider.w) ? (slider.itemW * (slider.count - 1)) + (slideMargin * (slider.count - 1)) : ((slider.itemW + slideMargin) * slider.count) - slider.w - slideMargin;
+      } else {
+        slider.itemW = slider.w;
+        slider.itemM = slideMargin;
+        slider.pagingCount = slider.count;
+        slider.last = slider.count - 1;
+      }
+      slider.computedW = slider.itemW - slider.boxPadding;
+      slider.computedM = slider.itemM;
+    };
+
+    slider.update = function(pos, action) {
+      slider.doMath();
+
+      // update currentSlide and slider.animatingTo if necessary
+      if (!carousel) {
+        if (pos < slider.currentSlide) {
+          slider.currentSlide += 1;
+        } else if (pos <= slider.currentSlide && pos !== 0) {
+          slider.currentSlide -= 1;
+        }
+        slider.animatingTo = slider.currentSlide;
+      }
+
+      // update controlNav
+      if (slider.vars.controlNav && !slider.manualControls) {
+        if ((action === "add" && !carousel) || slider.pagingCount > slider.controlNav.length) {
+          methods.controlNav.update("add");
+        } else if ((action === "remove" && !carousel) || slider.pagingCount < slider.controlNav.length) {
+          if (carousel && slider.currentSlide > slider.last) {
+            slider.currentSlide -= 1;
+            slider.animatingTo -= 1;
+          }
+          methods.controlNav.update("remove", slider.last);
+        }
+      }
+      // update directionNav
+      if (slider.vars.directionNav) { methods.directionNav.update(); }
+
+    };
+
+    slider.addSlide = function(obj, pos) {
+      var $obj = $(obj);
+
+      slider.count += 1;
+      slider.last = slider.count - 1;
+
+      // append new slide
+      if (vertical && reverse) {
+        (pos !== undefined) ? slider.slides.eq(slider.count - pos).after($obj) : slider.container.prepend($obj);
+      } else {
+        (pos !== undefined) ? slider.slides.eq(pos).before($obj) : slider.container.append($obj);
+      }
+
+      // update currentSlide, animatingTo, controlNav, and directionNav
+      slider.update(pos, "add");
+
+      // update slider.slides
+      slider.slides = $(slider.vars.selector + ':not(.clone)', slider);
+      // re-setup the slider to accomdate new slide
+      slider.setup();
+
+      //FlexSlider: added() Callback
+      slider.vars.added(slider);
+    };
+    slider.removeSlide = function(obj) {
+      var pos = (isNaN(obj)) ? slider.slides.index($(obj)) : obj;
+
+      // update count
+      slider.count -= 1;
+      slider.last = slider.count - 1;
+
+      // remove slide
+      if (isNaN(obj)) {
+        $(obj, slider.slides).remove();
+      } else {
+        (vertical && reverse) ? slider.slides.eq(slider.last).remove() : slider.slides.eq(obj).remove();
+      }
+
+      // update currentSlide, animatingTo, controlNav, and directionNav
+      slider.doMath();
+      slider.update(pos, "remove");
+
+      // update slider.slides
+      slider.slides = $(slider.vars.selector + ':not(.clone)', slider);
+      // re-setup the slider to accomdate new slide
+      slider.setup();
+
+      // FlexSlider: removed() Callback
+      slider.vars.removed(slider);
+    };
+
+    //FlexSlider: Initialize
+    methods.init();
+  };
+
+  // Ensure the slider isn't focussed if the window loses focus.
+  $( window ).blur( function ( e ) {
+    focused = false;
+  }).focus( function ( e ) {
+    focused = true;
+  });
+
+  //FlexSlider: Default Settings
+  $.flexslider.defaults = {
+    namespace: "flex-",             //{NEW} String: Prefix string attached to the class of every element generated by the plugin
+    selector: ".slides > li",       //{NEW} Selector: Must match a simple pattern. '{container} > {slide}' -- Ignore pattern at your own peril
+    animation: "fade",              //String: Select your animation type, "fade" or "slide"
+    easing: "swing",                //{NEW} String: Determines the easing method used in jQuery transitions. jQuery easing plugin is supported!
+    direction: "horizontal",        //String: Select the sliding direction, "horizontal" or "vertical"
+    reverse: false,                 //{NEW} Boolean: Reverse the animation direction
+    animationLoop: true,            //Boolean: Should the animation loop? If false, directionNav will received "disable" classes at either end
+    smoothHeight: false,            //{NEW} Boolean: Allow height of the slider to animate smoothly in horizontal mode
+    startAt: 0,                     //Integer: The slide that the slider should start on. Array notation (0 = first slide)
+    slideshow: true,                //Boolean: Animate slider automatically
+    slideshowSpeed: 7000,           //Integer: Set the speed of the slideshow cycling, in milliseconds
+    animationSpeed: 600,            //Integer: Set the speed of animations, in milliseconds
+    initDelay: 0,                   //{NEW} Integer: Set an initialization delay, in milliseconds
+    randomize: false,               //Boolean: Randomize slide order
+    fadeFirstSlide: true,           //Boolean: Fade in the first slide when animation type is "fade"
+    thumbCaptions: false,           //Boolean: Whether or not to put captions on thumbnails when using the "thumbnails" controlNav.
+
+    // Usability features
+    pauseOnAction: true,            //Boolean: Pause the slideshow when interacting with control elements, highly recommended.
+    pauseOnHover: false,            //Boolean: Pause the slideshow when hovering over slider, then resume when no longer hovering
+    pauseInvisible: true,       //{NEW} Boolean: Pause the slideshow when tab is invisible, resume when visible. Provides better UX, lower CPU usage.
+    useCSS: true,                   //{NEW} Boolean: Slider will use CSS3 transitions if available
+    touch: true,                    //{NEW} Boolean: Allow touch swipe navigation of the slider on touch-enabled devices
+    video: false,                   //{NEW} Boolean: If using video in the slider, will prevent CSS3 3D Transforms to avoid graphical glitches
+
+    // Primary Controls
+    controlNav: true,               //Boolean: Create navigation for paging control of each slide? Note: Leave true for manualControls usage
+    directionNav: true,             //Boolean: Create navigation for previous/next navigation? (true/false)
+    prevText: "Previous",           //String: Set the text for the "previous" directionNav item
+    nextText: "Next",               //String: Set the text for the "next" directionNav item
+
+    // Secondary Navigation
+    keyboard: true,                 //Boolean: Allow slider navigating via keyboard left/right keys
+    multipleKeyboard: false,        //{NEW} Boolean: Allow keyboard navigation to affect multiple sliders. Default behavior cuts out keyboard navigation with more than one slider present.
+    mousewheel: false,              //{UPDATED} Boolean: Requires jquery.mousewheel.js (https://github.com/brandonaaron/jquery-mousewheel) - Allows slider navigating via mousewheel
+    pausePlay: false,               //Boolean: Create pause/play dynamic element
+    pauseText: "Pause",             //String: Set the text for the "pause" pausePlay item
+    playText: "Play",               //String: Set the text for the "play" pausePlay item
+
+    // Special properties
+    controlsContainer: "",          //{UPDATED} jQuery Object/Selector: Declare which container the navigation elements should be appended too. Default container is the FlexSlider element. Example use would be $(".flexslider-container"). Property is ignored if given element is not found.
+    manualControls: "",             //{UPDATED} jQuery Object/Selector: Declare custom control navigation. Examples would be $(".flex-control-nav li") or "#tabs-nav li img", etc. The number of elements in your controlNav should match the number of slides/tabs.
+    customDirectionNav: "",         //{NEW} jQuery Object/Selector: Custom prev / next button. Must be two jQuery elements. In order to make the events work they have to have the classes "prev" and "next" (plus namespace)
+    sync: "",                       //{NEW} Selector: Mirror the actions performed on this slider with another slider. Use with care.
+    asNavFor: "",                   //{NEW} Selector: Internal property exposed for turning the slider into a thumbnail navigation for another slider
+
+    // Carousel Options
+    itemWidth: 0,                   //{NEW} Integer: Box-model width of individual carousel items, including horizontal borders and padding.
+    itemMargin: 0,                  //{NEW} Integer: Margin between carousel items.
+    minItems: 1,                    //{NEW} Integer: Minimum number of carousel items that should be visible. Items will resize fluidly when below this.
+    maxItems: 0,                    //{NEW} Integer: Maxmimum number of carousel items that should be visible. Items will resize fluidly when above this limit.
+    move: 0,                        //{NEW} Integer: Number of carousel items that should move on animation. If 0, slider will move all visible items.
+    allowOneSlide: true,           //{NEW} Boolean: Whether or not to allow a slider comprised of a single slide
+
+    // Browser Specific
+    isFirefox: false,             // {NEW} Boolean: Set to true when Firefox is the browser used.
+
+    // Callback API
+    start: function(){},            //Callback: function(slider) - Fires when the slider loads the first slide
+    before: function(){},           //Callback: function(slider) - Fires asynchronously with each slider animation
+    after: function(){},            //Callback: function(slider) - Fires after each slider animation completes
+    end: function(){},              //Callback: function(slider) - Fires when the slider reaches the last slide (asynchronous)
+    added: function(){},            //{NEW} Callback: function(slider) - Fires after a slide is added
+    removed: function(){},           //{NEW} Callback: function(slider) - Fires after a slide is removed
+    init: function() {},             //{NEW} Callback: function(slider) - Fires after the slider is initially setup
+  rtl: false             //{NEW} Boolean: Whether or not to enable RTL mode
+  };
+
+  //FlexSlider: Plugin Function
+  $.fn.flexslider = function(options) {
+    if (options === undefined) { options = {}; }
+
+    if (typeof options === "object") {
+      return this.each(function() {
+        var $this = $(this),
+            selector = (options.selector) ? options.selector : ".slides > li",
+            $slides = $this.find(selector);
+
+      if ( ( $slides.length === 1 && options.allowOneSlide === false ) || $slides.length === 0 ) {
+          $slides.fadeIn(400);
+          if (options.start) { options.start($this); }
+        } else if ($this.data('flexslider') === undefined) {
+          new $.flexslider(this, options);
+        }
+      });
+    } else {
+      // Helper strings to quickly perform functions on the slider
+      var $slider = $(this).data('flexslider');
+      switch (options) {
+        case "play": $slider.play(); break;
+        case "pause": $slider.pause(); break;
+        case "stop": $slider.stop(); break;
+        case "next": $slider.flexAnimate($slider.getTarget("next"), true); break;
+        case "prev":
+        case "previous": $slider.flexAnimate($slider.getTarget("prev"), true); break;
+        default: if (typeof options === "number") { $slider.flexAnimate(options, true); }
+      }
+    }
+  };
+})(jQuery);
+
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(5).setImmediate))
 
 /***/ }),
-/* 18 */
+/* 19 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(global, process) {(function (global, undefined) {
+    "use strict";
+
+    if (global.setImmediate) {
+        return;
+    }
+
+    var nextHandle = 1; // Spec says greater than zero
+    var tasksByHandle = {};
+    var currentlyRunningATask = false;
+    var doc = global.document;
+    var registerImmediate;
+
+    function setImmediate(callback) {
+      // Callback can either be a function or a string
+      if (typeof callback !== "function") {
+        callback = new Function("" + callback);
+      }
+      // Copy function arguments
+      var args = new Array(arguments.length - 1);
+      for (var i = 0; i < args.length; i++) {
+          args[i] = arguments[i + 1];
+      }
+      // Store and register the task
+      var task = { callback: callback, args: args };
+      tasksByHandle[nextHandle] = task;
+      registerImmediate(nextHandle);
+      return nextHandle++;
+    }
+
+    function clearImmediate(handle) {
+        delete tasksByHandle[handle];
+    }
+
+    function run(task) {
+        var callback = task.callback;
+        var args = task.args;
+        switch (args.length) {
+        case 0:
+            callback();
+            break;
+        case 1:
+            callback(args[0]);
+            break;
+        case 2:
+            callback(args[0], args[1]);
+            break;
+        case 3:
+            callback(args[0], args[1], args[2]);
+            break;
+        default:
+            callback.apply(undefined, args);
+            break;
+        }
+    }
+
+    function runIfPresent(handle) {
+        // From the spec: "Wait until any invocations of this algorithm started before this one have completed."
+        // So if we're currently running a task, we'll need to delay this invocation.
+        if (currentlyRunningATask) {
+            // Delay by doing a setTimeout. setImmediate was tried instead, but in Firefox 7 it generated a
+            // "too much recursion" error.
+            setTimeout(runIfPresent, 0, handle);
+        } else {
+            var task = tasksByHandle[handle];
+            if (task) {
+                currentlyRunningATask = true;
+                try {
+                    run(task);
+                } finally {
+                    clearImmediate(handle);
+                    currentlyRunningATask = false;
+                }
+            }
+        }
+    }
+
+    function installNextTickImplementation() {
+        registerImmediate = function(handle) {
+            process.nextTick(function () { runIfPresent(handle); });
+        };
+    }
+
+    function canUsePostMessage() {
+        // The test against `importScripts` prevents this implementation from being installed inside a web worker,
+        // where `global.postMessage` means something completely different and can't be used for this purpose.
+        if (global.postMessage && !global.importScripts) {
+            var postMessageIsAsynchronous = true;
+            var oldOnMessage = global.onmessage;
+            global.onmessage = function() {
+                postMessageIsAsynchronous = false;
+            };
+            global.postMessage("", "*");
+            global.onmessage = oldOnMessage;
+            return postMessageIsAsynchronous;
+        }
+    }
+
+    function installPostMessageImplementation() {
+        // Installs an event handler on `global` for the `message` event: see
+        // * https://developer.mozilla.org/en/DOM/window.postMessage
+        // * http://www.whatwg.org/specs/web-apps/current-work/multipage/comms.html#crossDocumentMessages
+
+        var messagePrefix = "setImmediate$" + Math.random() + "$";
+        var onGlobalMessage = function(event) {
+            if (event.source === global &&
+                typeof event.data === "string" &&
+                event.data.indexOf(messagePrefix) === 0) {
+                runIfPresent(+event.data.slice(messagePrefix.length));
+            }
+        };
+
+        if (global.addEventListener) {
+            global.addEventListener("message", onGlobalMessage, false);
+        } else {
+            global.attachEvent("onmessage", onGlobalMessage);
+        }
+
+        registerImmediate = function(handle) {
+            global.postMessage(messagePrefix + handle, "*");
+        };
+    }
+
+    function installMessageChannelImplementation() {
+        var channel = new MessageChannel();
+        channel.port1.onmessage = function(event) {
+            var handle = event.data;
+            runIfPresent(handle);
+        };
+
+        registerImmediate = function(handle) {
+            channel.port2.postMessage(handle);
+        };
+    }
+
+    function installReadyStateChangeImplementation() {
+        var html = doc.documentElement;
+        registerImmediate = function(handle) {
+            // Create a <script> element; its readystatechange event will be fired asynchronously once it is inserted
+            // into the document. Do so, thus queuing up the task. Remember to clean up once it's been called.
+            var script = doc.createElement("script");
+            script.onreadystatechange = function () {
+                runIfPresent(handle);
+                script.onreadystatechange = null;
+                html.removeChild(script);
+                script = null;
+            };
+            html.appendChild(script);
+        };
+    }
+
+    function installSetTimeoutImplementation() {
+        registerImmediate = function(handle) {
+            setTimeout(runIfPresent, 0, handle);
+        };
+    }
+
+    // If supported, we should attach to the prototype of global, since that is where setTimeout et al. live.
+    var attachTo = Object.getPrototypeOf && Object.getPrototypeOf(global);
+    attachTo = attachTo && attachTo.setTimeout ? attachTo : global;
+
+    // Don't get fooled by e.g. browserify environments.
+    if ({}.toString.call(global.process) === "[object process]") {
+        // For Node.js before 0.9
+        installNextTickImplementation();
+
+    } else if (canUsePostMessage()) {
+        // For non-IE10 modern browsers
+        installPostMessageImplementation();
+
+    } else if (global.MessageChannel) {
+        // For web workers, where supported
+        installMessageChannelImplementation();
+
+    } else if (doc && "onreadystatechange" in doc.createElement("script")) {
+        // For IE 6–8
+        installReadyStateChangeImplementation();
+
+    } else {
+        // For older browsers
+        installSetTimeoutImplementation();
+    }
+
+    attachTo.setImmediate = setImmediate;
+    attachTo.clearImmediate = clearImmediate;
+}(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
+
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(6)))
+
+/***/ }),
+/* 20 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__(21);
+
+/***/ }),
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var utils = __webpack_require__(0);
-var bind = __webpack_require__(5);
-var Axios = __webpack_require__(20);
+var bind = __webpack_require__(7);
+var Axios = __webpack_require__(23);
 var defaults = __webpack_require__(2);
 
 /**
@@ -35083,15 +36588,15 @@ axios.create = function create(instanceConfig) {
 };
 
 // Expose Cancel & CancelToken
-axios.Cancel = __webpack_require__(10);
-axios.CancelToken = __webpack_require__(34);
-axios.isCancel = __webpack_require__(9);
+axios.Cancel = __webpack_require__(11);
+axios.CancelToken = __webpack_require__(37);
+axios.isCancel = __webpack_require__(10);
 
 // Expose all/spread
 axios.all = function all(promises) {
   return Promise.all(promises);
 };
-axios.spread = __webpack_require__(35);
+axios.spread = __webpack_require__(38);
 
 module.exports = axios;
 
@@ -35100,7 +36605,7 @@ module.exports.default = axios;
 
 
 /***/ }),
-/* 19 */
+/* 22 */
 /***/ (function(module, exports) {
 
 /*!
@@ -35127,7 +36632,7 @@ function isSlowBuffer (obj) {
 
 
 /***/ }),
-/* 20 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35135,8 +36640,8 @@ function isSlowBuffer (obj) {
 
 var defaults = __webpack_require__(2);
 var utils = __webpack_require__(0);
-var InterceptorManager = __webpack_require__(29);
-var dispatchRequest = __webpack_require__(30);
+var InterceptorManager = __webpack_require__(32);
+var dispatchRequest = __webpack_require__(33);
 
 /**
  * Create a new instance of Axios
@@ -35213,7 +36718,7 @@ module.exports = Axios;
 
 
 /***/ }),
-/* 21 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35232,13 +36737,13 @@ module.exports = function normalizeHeaderName(headers, normalizedName) {
 
 
 /***/ }),
-/* 22 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var createError = __webpack_require__(8);
+var createError = __webpack_require__(9);
 
 /**
  * Resolve or reject a Promise based on response status.
@@ -35265,7 +36770,7 @@ module.exports = function settle(resolve, reject, response) {
 
 
 /***/ }),
-/* 23 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35293,7 +36798,7 @@ module.exports = function enhanceError(error, config, code, request, response) {
 
 
 /***/ }),
-/* 24 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35366,7 +36871,7 @@ module.exports = function buildURL(url, params, paramsSerializer) {
 
 
 /***/ }),
-/* 25 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35426,7 +36931,7 @@ module.exports = function parseHeaders(headers) {
 
 
 /***/ }),
-/* 26 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35501,7 +37006,7 @@ module.exports = (
 
 
 /***/ }),
-/* 27 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35544,7 +37049,7 @@ module.exports = btoa;
 
 
 /***/ }),
-/* 28 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35604,7 +37109,7 @@ module.exports = (
 
 
 /***/ }),
-/* 29 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35663,18 +37168,18 @@ module.exports = InterceptorManager;
 
 
 /***/ }),
-/* 30 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var utils = __webpack_require__(0);
-var transformData = __webpack_require__(31);
-var isCancel = __webpack_require__(9);
+var transformData = __webpack_require__(34);
+var isCancel = __webpack_require__(10);
 var defaults = __webpack_require__(2);
-var isAbsoluteURL = __webpack_require__(32);
-var combineURLs = __webpack_require__(33);
+var isAbsoluteURL = __webpack_require__(35);
+var combineURLs = __webpack_require__(36);
 
 /**
  * Throws a `Cancel` if cancellation has been requested.
@@ -35756,7 +37261,7 @@ module.exports = function dispatchRequest(config) {
 
 
 /***/ }),
-/* 31 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35783,7 +37288,7 @@ module.exports = function transformData(data, headers, fns) {
 
 
 /***/ }),
-/* 32 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35804,7 +37309,7 @@ module.exports = function isAbsoluteURL(url) {
 
 
 /***/ }),
-/* 33 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35825,13 +37330,13 @@ module.exports = function combineURLs(baseURL, relativeURL) {
 
 
 /***/ }),
-/* 34 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var Cancel = __webpack_require__(10);
+var Cancel = __webpack_require__(11);
 
 /**
  * A `CancelToken` is an object that can be used to request cancellation of an operation.
@@ -35889,7 +37394,7 @@ module.exports = CancelToken;
 
 
 /***/ }),
-/* 35 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35923,27 +37428,53 @@ module.exports = function spread(callback) {
 
 
 /***/ }),
-/* 36 */
+/* 39 */
 /***/ (function(module, exports) {
 
 $(document).ready(function () {
-    $(".dropdown").hover(function () {
-        $('.dropdown-menu', this).not('.in .dropdown-menu').stop(true, true).slideDown("fast");
-        $(this).toggleClass('open');
-    }, function () {
-        $('.dropdown-menu', this).not('.in .dropdown-menu').stop(true, true).slideUp("fast");
-        $(this).toggleClass('open');
+  // Can also be used with $(document).ready()
+  $(window).on('load', function () {
+    $('.flexslider').flexslider({
+      animation: "fade",
+      animationSpeed: 1000,
+      useCSS: true,
+      controlNav: false,
+      touch: true
     });
+  });
 
-    $(window).on('load', function () {
-        $('#slider').nivoSlider({
-            controlNav: false
-        });
+  // Slider
+  // $(document).ready(function(){
+  //     $('.bxslider').bxSlider({
+  //         mode: 'fade',
+  //         pager: false,
+  //         responsive: true,
+  //         touchEnabled: false, 
+  //          auto: true,
+  //          nextText: '<i class="fas fa-angle-right"></i>',
+  //          prevText: '<i class="fas fa-angle-left"></i>'
+  //     });
+  // });
+
+  // Custom Accordion
+  var acc = document.getElementsByClassName("custom-accordion");
+  var i;
+
+  for (i = 0; i < acc.length; i++) {
+    acc[i].addEventListener("click", function () {
+      this.classList.toggle("custom-accordion-active");
+      var panel = this.nextElementSibling;
+      if (panel.style.maxHeight) {
+        panel.style.maxHeight = null;
+      } else {
+        panel.style.maxHeight = panel.scrollHeight + "px";
+      }
     });
+  }
 });
 
 /***/ }),
-/* 37 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -46906,281 +48437,18 @@ Vue.compile = compileToFunctions;
 
 module.exports = Vue;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(38).setImmediate))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(5).setImmediate))
 
 /***/ }),
-/* 38 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* WEBPACK VAR INJECTION */(function(global) {var scope = (typeof global !== "undefined" && global) ||
-            (typeof self !== "undefined" && self) ||
-            window;
-var apply = Function.prototype.apply;
-
-// DOM APIs, for completeness
-
-exports.setTimeout = function() {
-  return new Timeout(apply.call(setTimeout, scope, arguments), clearTimeout);
-};
-exports.setInterval = function() {
-  return new Timeout(apply.call(setInterval, scope, arguments), clearInterval);
-};
-exports.clearTimeout =
-exports.clearInterval = function(timeout) {
-  if (timeout) {
-    timeout.close();
-  }
-};
-
-function Timeout(id, clearFn) {
-  this._id = id;
-  this._clearFn = clearFn;
-}
-Timeout.prototype.unref = Timeout.prototype.ref = function() {};
-Timeout.prototype.close = function() {
-  this._clearFn.call(scope, this._id);
-};
-
-// Does not start the time, just sets up the members needed.
-exports.enroll = function(item, msecs) {
-  clearTimeout(item._idleTimeoutId);
-  item._idleTimeout = msecs;
-};
-
-exports.unenroll = function(item) {
-  clearTimeout(item._idleTimeoutId);
-  item._idleTimeout = -1;
-};
-
-exports._unrefActive = exports.active = function(item) {
-  clearTimeout(item._idleTimeoutId);
-
-  var msecs = item._idleTimeout;
-  if (msecs >= 0) {
-    item._idleTimeoutId = setTimeout(function onTimeout() {
-      if (item._onTimeout)
-        item._onTimeout();
-    }, msecs);
-  }
-};
-
-// setimmediate attaches itself to the global object
-__webpack_require__(39);
-// On some exotic environments, it's not clear which object `setimmediate` was
-// able to install onto.  Search each possibility in the same order as the
-// `setimmediate` library.
-exports.setImmediate = (typeof self !== "undefined" && self.setImmediate) ||
-                       (typeof global !== "undefined" && global.setImmediate) ||
-                       (this && this.setImmediate);
-exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
-                         (typeof global !== "undefined" && global.clearImmediate) ||
-                         (this && this.clearImmediate);
-
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
-
-/***/ }),
-/* 39 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* WEBPACK VAR INJECTION */(function(global, process) {(function (global, undefined) {
-    "use strict";
-
-    if (global.setImmediate) {
-        return;
-    }
-
-    var nextHandle = 1; // Spec says greater than zero
-    var tasksByHandle = {};
-    var currentlyRunningATask = false;
-    var doc = global.document;
-    var registerImmediate;
-
-    function setImmediate(callback) {
-      // Callback can either be a function or a string
-      if (typeof callback !== "function") {
-        callback = new Function("" + callback);
-      }
-      // Copy function arguments
-      var args = new Array(arguments.length - 1);
-      for (var i = 0; i < args.length; i++) {
-          args[i] = arguments[i + 1];
-      }
-      // Store and register the task
-      var task = { callback: callback, args: args };
-      tasksByHandle[nextHandle] = task;
-      registerImmediate(nextHandle);
-      return nextHandle++;
-    }
-
-    function clearImmediate(handle) {
-        delete tasksByHandle[handle];
-    }
-
-    function run(task) {
-        var callback = task.callback;
-        var args = task.args;
-        switch (args.length) {
-        case 0:
-            callback();
-            break;
-        case 1:
-            callback(args[0]);
-            break;
-        case 2:
-            callback(args[0], args[1]);
-            break;
-        case 3:
-            callback(args[0], args[1], args[2]);
-            break;
-        default:
-            callback.apply(undefined, args);
-            break;
-        }
-    }
-
-    function runIfPresent(handle) {
-        // From the spec: "Wait until any invocations of this algorithm started before this one have completed."
-        // So if we're currently running a task, we'll need to delay this invocation.
-        if (currentlyRunningATask) {
-            // Delay by doing a setTimeout. setImmediate was tried instead, but in Firefox 7 it generated a
-            // "too much recursion" error.
-            setTimeout(runIfPresent, 0, handle);
-        } else {
-            var task = tasksByHandle[handle];
-            if (task) {
-                currentlyRunningATask = true;
-                try {
-                    run(task);
-                } finally {
-                    clearImmediate(handle);
-                    currentlyRunningATask = false;
-                }
-            }
-        }
-    }
-
-    function installNextTickImplementation() {
-        registerImmediate = function(handle) {
-            process.nextTick(function () { runIfPresent(handle); });
-        };
-    }
-
-    function canUsePostMessage() {
-        // The test against `importScripts` prevents this implementation from being installed inside a web worker,
-        // where `global.postMessage` means something completely different and can't be used for this purpose.
-        if (global.postMessage && !global.importScripts) {
-            var postMessageIsAsynchronous = true;
-            var oldOnMessage = global.onmessage;
-            global.onmessage = function() {
-                postMessageIsAsynchronous = false;
-            };
-            global.postMessage("", "*");
-            global.onmessage = oldOnMessage;
-            return postMessageIsAsynchronous;
-        }
-    }
-
-    function installPostMessageImplementation() {
-        // Installs an event handler on `global` for the `message` event: see
-        // * https://developer.mozilla.org/en/DOM/window.postMessage
-        // * http://www.whatwg.org/specs/web-apps/current-work/multipage/comms.html#crossDocumentMessages
-
-        var messagePrefix = "setImmediate$" + Math.random() + "$";
-        var onGlobalMessage = function(event) {
-            if (event.source === global &&
-                typeof event.data === "string" &&
-                event.data.indexOf(messagePrefix) === 0) {
-                runIfPresent(+event.data.slice(messagePrefix.length));
-            }
-        };
-
-        if (global.addEventListener) {
-            global.addEventListener("message", onGlobalMessage, false);
-        } else {
-            global.attachEvent("onmessage", onGlobalMessage);
-        }
-
-        registerImmediate = function(handle) {
-            global.postMessage(messagePrefix + handle, "*");
-        };
-    }
-
-    function installMessageChannelImplementation() {
-        var channel = new MessageChannel();
-        channel.port1.onmessage = function(event) {
-            var handle = event.data;
-            runIfPresent(handle);
-        };
-
-        registerImmediate = function(handle) {
-            channel.port2.postMessage(handle);
-        };
-    }
-
-    function installReadyStateChangeImplementation() {
-        var html = doc.documentElement;
-        registerImmediate = function(handle) {
-            // Create a <script> element; its readystatechange event will be fired asynchronously once it is inserted
-            // into the document. Do so, thus queuing up the task. Remember to clean up once it's been called.
-            var script = doc.createElement("script");
-            script.onreadystatechange = function () {
-                runIfPresent(handle);
-                script.onreadystatechange = null;
-                html.removeChild(script);
-                script = null;
-            };
-            html.appendChild(script);
-        };
-    }
-
-    function installSetTimeoutImplementation() {
-        registerImmediate = function(handle) {
-            setTimeout(runIfPresent, 0, handle);
-        };
-    }
-
-    // If supported, we should attach to the prototype of global, since that is where setTimeout et al. live.
-    var attachTo = Object.getPrototypeOf && Object.getPrototypeOf(global);
-    attachTo = attachTo && attachTo.setTimeout ? attachTo : global;
-
-    // Don't get fooled by e.g. browserify environments.
-    if ({}.toString.call(global.process) === "[object process]") {
-        // For Node.js before 0.9
-        installNextTickImplementation();
-
-    } else if (canUsePostMessage()) {
-        // For non-IE10 modern browsers
-        installPostMessageImplementation();
-
-    } else if (global.MessageChannel) {
-        // For web workers, where supported
-        installMessageChannelImplementation();
-
-    } else if (doc && "onreadystatechange" in doc.createElement("script")) {
-        // For IE 6–8
-        installReadyStateChangeImplementation();
-
-    } else {
-        // For older browsers
-        installSetTimeoutImplementation();
-    }
-
-    attachTo.setImmediate = setImmediate;
-    attachTo.clearImmediate = clearImmediate;
-}(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
-
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(6)))
-
-/***/ }),
-/* 40 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
-var normalizeComponent = __webpack_require__(41)
+var normalizeComponent = __webpack_require__(42)
 /* script */
-var __vue_script__ = __webpack_require__(42)
+var __vue_script__ = __webpack_require__(43)
 /* template */
-var __vue_template__ = __webpack_require__(43)
+var __vue_template__ = __webpack_require__(44)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -47219,7 +48487,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 41 */
+/* 42 */
 /***/ (function(module, exports) {
 
 /* globals __VUE_SSR_CONTEXT__ */
@@ -47328,7 +48596,7 @@ module.exports = function normalizeComponent (
 
 
 /***/ }),
-/* 42 */
+/* 43 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -47357,7 +48625,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 43 */
+/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -47400,719 +48668,10 @@ if (false) {
 }
 
 /***/ }),
-/* 44 */
+/* 45 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 45 */,
-/* 46 */,
-/* 47 */,
-/* 48 */,
-/* 49 */,
-/* 50 */,
-/* 51 */,
-/* 52 */
-/***/ (function(module, exports) {
-
-/*
- * jQuery Nivo Slider v3.2
- * http://nivo.dev7studios.com
- *
- * Copyright 2012, Dev7studios
- * Free to use and abuse under the MIT license.
- * http://www.opensource.org/licenses/mit-license.php
- */
-
-(function ($) {
-    var NivoSlider = function NivoSlider(element, options) {
-        // Defaults are below
-        var settings = $.extend({}, $.fn.nivoSlider.defaults, options);
-
-        // Useful variables. Play carefully.
-        var vars = {
-            currentSlide: 0,
-            currentImage: '',
-            totalSlides: 0,
-            running: false,
-            paused: false,
-            stop: false,
-            controlNavEl: false
-        };
-
-        // Get this slider
-        var slider = $(element);
-        slider.data('nivo:vars', vars).addClass('nivoSlider');
-
-        // Find our slider children
-        var kids = slider.children();
-        kids.each(function () {
-            var child = $(this);
-            var link = '';
-            if (!child.is('img')) {
-                if (child.is('a')) {
-                    child.addClass('nivo-imageLink');
-                    link = child;
-                }
-                child = child.find('img:first');
-            }
-            // Get img width & height
-            var childWidth = childWidth === 0 ? child.attr('width') : child.width(),
-                childHeight = childHeight === 0 ? child.attr('height') : child.height();
-
-            if (link !== '') {
-                link.css('display', 'none');
-            }
-            child.css('display', 'none');
-            vars.totalSlides++;
-        });
-
-        // If randomStart
-        if (settings.randomStart) {
-            settings.startSlide = Math.floor(Math.random() * vars.totalSlides);
-        }
-
-        // Set startSlide
-        if (settings.startSlide > 0) {
-            if (settings.startSlide >= vars.totalSlides) {
-                settings.startSlide = vars.totalSlides - 1;
-            }
-            vars.currentSlide = settings.startSlide;
-        }
-
-        // Get initial image
-        if ($(kids[vars.currentSlide]).is('img')) {
-            vars.currentImage = $(kids[vars.currentSlide]);
-        } else {
-            vars.currentImage = $(kids[vars.currentSlide]).find('img:first');
-        }
-
-        // Show initial link
-        if ($(kids[vars.currentSlide]).is('a')) {
-            $(kids[vars.currentSlide]).css('display', 'block');
-        }
-
-        // Set first background
-        var sliderImg = $('<img/>').addClass('nivo-main-image');
-        sliderImg.attr('src', vars.currentImage.attr('src')).show();
-        slider.append(sliderImg);
-
-        // Detect Window Resize
-        $(window).resize(function () {
-            slider.children('img').width(slider.width());
-            sliderImg.attr('src', vars.currentImage.attr('src'));
-            sliderImg.stop().height('auto');
-            $('.nivo-slice').remove();
-            $('.nivo-box').remove();
-        });
-
-        //Create caption
-        slider.append($('<div class="nivo-caption"></div>'));
-
-        // Process caption function
-        var processCaption = function processCaption(settings) {
-            var nivoCaption = $('.nivo-caption', slider);
-            if (vars.currentImage.attr('title') != '' && vars.currentImage.attr('title') != undefined) {
-                var title = vars.currentImage.attr('title');
-                if (title.substr(0, 1) == '#') title = $(title).html();
-
-                if (nivoCaption.css('display') == 'block') {
-                    setTimeout(function () {
-                        nivoCaption.html(title);
-                    }, settings.animSpeed);
-                } else {
-                    nivoCaption.html(title);
-                    nivoCaption.stop().fadeIn(settings.animSpeed);
-                }
-            } else {
-                nivoCaption.stop().fadeOut(settings.animSpeed);
-            }
-        };
-
-        //Process initial  caption
-        processCaption(settings);
-
-        // In the words of Super Mario "let's a go!"
-        var timer = 0;
-        if (!settings.manualAdvance && kids.length > 1) {
-            timer = setInterval(function () {
-                nivoRun(slider, kids, settings, false);
-            }, settings.pauseTime);
-        }
-
-        // Add Direction nav
-        if (settings.directionNav) {
-            slider.append('<div class="nivo-directionNav"><a class="nivo-prevNav">' + settings.prevText + '</a><a class="nivo-nextNav">' + settings.nextText + '</a></div>');
-
-            $(slider).on('click', 'a.nivo-prevNav', function () {
-                if (vars.running) {
-                    return false;
-                }
-                clearInterval(timer);
-                timer = '';
-                vars.currentSlide -= 2;
-                nivoRun(slider, kids, settings, 'prev');
-            });
-
-            $(slider).on('click', 'a.nivo-nextNav', function () {
-                if (vars.running) {
-                    return false;
-                }
-                clearInterval(timer);
-                timer = '';
-                nivoRun(slider, kids, settings, 'next');
-            });
-        }
-
-        // Add Control nav
-        if (settings.controlNav) {
-            vars.controlNavEl = $('<div class="nivo-controlNav"></div>');
-            slider.after(vars.controlNavEl);
-            for (var i = 0; i < kids.length; i++) {
-                if (settings.controlNavThumbs) {
-                    vars.controlNavEl.addClass('nivo-thumbs-enabled');
-                    var child = kids.eq(i);
-                    if (!child.is('img')) {
-                        child = child.find('img:first');
-                    }
-                    if (child.attr('data-thumb')) vars.controlNavEl.append('<a class="nivo-control" rel="' + i + '"><img src="' + child.attr('data-thumb') + '" alt="" /></a>');
-                } else {
-                    vars.controlNavEl.append('<a class="nivo-control" rel="' + i + '">' + (i + 1) + '</a>');
-                }
-            }
-
-            //Set initial active link
-            $('a:eq(' + vars.currentSlide + ')', vars.controlNavEl).addClass('active');
-
-            $('a', vars.controlNavEl).bind('click', function () {
-                if (vars.running) return false;
-                if ($(this).hasClass('active')) return false;
-                clearInterval(timer);
-                timer = '';
-                sliderImg.attr('src', vars.currentImage.attr('src'));
-                vars.currentSlide = $(this).attr('rel') - 1;
-                nivoRun(slider, kids, settings, 'control');
-            });
-        }
-
-        //For pauseOnHover setting
-        if (settings.pauseOnHover) {
-            slider.hover(function () {
-                vars.paused = true;
-                clearInterval(timer);
-                timer = '';
-            }, function () {
-                vars.paused = false;
-                // Restart the timer
-                if (timer === '' && !settings.manualAdvance) {
-                    timer = setInterval(function () {
-                        nivoRun(slider, kids, settings, false);
-                    }, settings.pauseTime);
-                }
-            });
-        }
-
-        // Event when Animation finishes
-        slider.bind('nivo:animFinished', function () {
-            sliderImg.attr('src', vars.currentImage.attr('src'));
-            vars.running = false;
-            // Hide child links
-            $(kids).each(function () {
-                if ($(this).is('a')) {
-                    $(this).css('display', 'none');
-                }
-            });
-            // Show current link
-            if ($(kids[vars.currentSlide]).is('a')) {
-                $(kids[vars.currentSlide]).css('display', 'block');
-            }
-            // Restart the timer
-            if (timer === '' && !vars.paused && !settings.manualAdvance) {
-                timer = setInterval(function () {
-                    nivoRun(slider, kids, settings, false);
-                }, settings.pauseTime);
-            }
-            // Trigger the afterChange callback
-            settings.afterChange.call(this);
-        });
-
-        // Add slices for slice animations
-        var createSlices = function createSlices(slider, settings, vars) {
-            if ($(vars.currentImage).parent().is('a')) $(vars.currentImage).parent().css('display', 'block');
-            $('img[src="' + vars.currentImage.attr('src') + '"]', slider).not('.nivo-main-image,.nivo-control img').width(slider.width()).css('visibility', 'hidden').show();
-            var sliceHeight = $('img[src="' + vars.currentImage.attr('src') + '"]', slider).not('.nivo-main-image,.nivo-control img').parent().is('a') ? $('img[src="' + vars.currentImage.attr('src') + '"]', slider).not('.nivo-main-image,.nivo-control img').parent().height() : $('img[src="' + vars.currentImage.attr('src') + '"]', slider).not('.nivo-main-image,.nivo-control img').height();
-
-            for (var i = 0; i < settings.slices; i++) {
-                var sliceWidth = Math.round(slider.width() / settings.slices);
-
-                if (i === settings.slices - 1) {
-                    slider.append($('<div class="nivo-slice" name="' + i + '"><img src="' + vars.currentImage.attr('src') + '" style="position:absolute; width:' + slider.width() + 'px; height:auto; display:block !important; top:0; left:-' + (sliceWidth + i * sliceWidth - sliceWidth) + 'px;" /></div>').css({
-                        left: sliceWidth * i + 'px',
-                        width: slider.width() - sliceWidth * i + 'px',
-                        height: sliceHeight + 'px',
-                        opacity: '0',
-                        overflow: 'hidden'
-                    }));
-                } else {
-                    slider.append($('<div class="nivo-slice" name="' + i + '"><img src="' + vars.currentImage.attr('src') + '" style="position:absolute; width:' + slider.width() + 'px; height:auto; display:block !important; top:0; left:-' + (sliceWidth + i * sliceWidth - sliceWidth) + 'px;" /></div>').css({
-                        left: sliceWidth * i + 'px',
-                        width: sliceWidth + 'px',
-                        height: sliceHeight + 'px',
-                        opacity: '0',
-                        overflow: 'hidden'
-                    }));
-                }
-            }
-
-            $('.nivo-slice', slider).height(sliceHeight);
-            sliderImg.stop().animate({
-                height: $(vars.currentImage).height()
-            }, settings.animSpeed);
-        };
-
-        // Add boxes for box animations
-        var createBoxes = function createBoxes(slider, settings, vars) {
-            if ($(vars.currentImage).parent().is('a')) $(vars.currentImage).parent().css('display', 'block');
-            $('img[src="' + vars.currentImage.attr('src') + '"]', slider).not('.nivo-main-image,.nivo-control img').width(slider.width()).css('visibility', 'hidden').show();
-            var boxWidth = Math.round(slider.width() / settings.boxCols),
-                boxHeight = Math.round($('img[src="' + vars.currentImage.attr('src') + '"]', slider).not('.nivo-main-image,.nivo-control img').height() / settings.boxRows);
-
-            for (var rows = 0; rows < settings.boxRows; rows++) {
-                for (var cols = 0; cols < settings.boxCols; cols++) {
-                    if (cols === settings.boxCols - 1) {
-                        slider.append($('<div class="nivo-box" name="' + cols + '" rel="' + rows + '"><img src="' + vars.currentImage.attr('src') + '" style="position:absolute; width:' + slider.width() + 'px; height:auto; display:block; top:-' + boxHeight * rows + 'px; left:-' + boxWidth * cols + 'px;" /></div>').css({
-                            opacity: 0,
-                            left: boxWidth * cols + 'px',
-                            top: boxHeight * rows + 'px',
-                            width: slider.width() - boxWidth * cols + 'px'
-
-                        }));
-                        $('.nivo-box[name="' + cols + '"]', slider).height($('.nivo-box[name="' + cols + '"] img', slider).height() + 'px');
-                    } else {
-                        slider.append($('<div class="nivo-box" name="' + cols + '" rel="' + rows + '"><img src="' + vars.currentImage.attr('src') + '" style="position:absolute; width:' + slider.width() + 'px; height:auto; display:block; top:-' + boxHeight * rows + 'px; left:-' + boxWidth * cols + 'px;" /></div>').css({
-                            opacity: 0,
-                            left: boxWidth * cols + 'px',
-                            top: boxHeight * rows + 'px',
-                            width: boxWidth + 'px'
-                        }));
-                        $('.nivo-box[name="' + cols + '"]', slider).height($('.nivo-box[name="' + cols + '"] img', slider).height() + 'px');
-                    }
-                }
-            }
-
-            sliderImg.stop().animate({
-                height: $(vars.currentImage).height()
-            }, settings.animSpeed);
-        };
-
-        // Private run method
-        var nivoRun = function nivoRun(slider, kids, settings, nudge) {
-            // Get our vars
-            var vars = slider.data('nivo:vars');
-
-            // Trigger the lastSlide callback
-            if (vars && vars.currentSlide === vars.totalSlides - 1) {
-                settings.lastSlide.call(this);
-            }
-
-            // Stop
-            if ((!vars || vars.stop) && !nudge) {
-                return false;
-            }
-
-            // Trigger the beforeChange callback
-            settings.beforeChange.call(this);
-
-            // Set current background before change
-            if (!nudge) {
-                sliderImg.attr('src', vars.currentImage.attr('src'));
-            } else {
-                if (nudge === 'prev') {
-                    sliderImg.attr('src', vars.currentImage.attr('src'));
-                }
-                if (nudge === 'next') {
-                    sliderImg.attr('src', vars.currentImage.attr('src'));
-                }
-            }
-
-            vars.currentSlide++;
-            // Trigger the slideshowEnd callback
-            if (vars.currentSlide === vars.totalSlides) {
-                vars.currentSlide = 0;
-                settings.slideshowEnd.call(this);
-            }
-            if (vars.currentSlide < 0) {
-                vars.currentSlide = vars.totalSlides - 1;
-            }
-            // Set vars.currentImage
-            if ($(kids[vars.currentSlide]).is('img')) {
-                vars.currentImage = $(kids[vars.currentSlide]);
-            } else {
-                vars.currentImage = $(kids[vars.currentSlide]).find('img:first');
-            }
-
-            // Set active links
-            if (settings.controlNav) {
-                $('a', vars.controlNavEl).removeClass('active');
-                $('a:eq(' + vars.currentSlide + ')', vars.controlNavEl).addClass('active');
-            }
-
-            // Process caption
-            processCaption(settings);
-
-            // Remove any slices from last transition
-            $('.nivo-slice', slider).remove();
-
-            // Remove any boxes from last transition
-            $('.nivo-box', slider).remove();
-
-            var currentEffect = settings.effect,
-                anims = '';
-
-            // Generate random effect
-            if (settings.effect === 'random') {
-                anims = new Array('sliceDownRight', 'sliceDownLeft', 'sliceUpRight', 'sliceUpLeft', 'sliceUpDown', 'sliceUpDownLeft', 'fold', 'fade', 'boxRandom', 'boxRain', 'boxRainReverse', 'boxRainGrow', 'boxRainGrowReverse');
-                currentEffect = anims[Math.floor(Math.random() * (anims.length + 1))];
-                if (currentEffect === undefined) {
-                    currentEffect = 'fade';
-                }
-            }
-
-            // Run random effect from specified set (eg: effect:'fold,fade')
-            if (settings.effect.indexOf(',') !== -1) {
-                anims = settings.effect.split(',');
-                currentEffect = anims[Math.floor(Math.random() * anims.length)];
-                if (currentEffect === undefined) {
-                    currentEffect = 'fade';
-                }
-            }
-
-            // Custom transition as defined by "data-transition" attribute
-            if (vars.currentImage.attr('data-transition')) {
-                currentEffect = vars.currentImage.attr('data-transition');
-            }
-
-            // Run effects
-            vars.running = true;
-            var timeBuff = 0,
-                i = 0,
-                slices = '',
-                firstSlice = '',
-                totalBoxes = '',
-                boxes = '';
-
-            if (currentEffect === 'sliceDown' || currentEffect === 'sliceDownRight' || currentEffect === 'sliceDownLeft') {
-                createSlices(slider, settings, vars);
-                timeBuff = 0;
-                i = 0;
-                slices = $('.nivo-slice', slider);
-                if (currentEffect === 'sliceDownLeft') {
-                    slices = $('.nivo-slice', slider)._reverse();
-                }
-
-                slices.each(function () {
-                    var slice = $(this);
-                    slice.css({ 'top': '0px' });
-                    if (i === settings.slices - 1) {
-                        setTimeout(function () {
-                            slice.animate({ opacity: '1.0' }, settings.animSpeed, '', function () {
-                                slider.trigger('nivo:animFinished');
-                            });
-                        }, 100 + timeBuff);
-                    } else {
-                        setTimeout(function () {
-                            slice.animate({ opacity: '1.0' }, settings.animSpeed);
-                        }, 100 + timeBuff);
-                    }
-                    timeBuff += 50;
-                    i++;
-                });
-            } else if (currentEffect === 'sliceUp' || currentEffect === 'sliceUpRight' || currentEffect === 'sliceUpLeft') {
-                createSlices(slider, settings, vars);
-                timeBuff = 0;
-                i = 0;
-                slices = $('.nivo-slice', slider);
-                if (currentEffect === 'sliceUpLeft') {
-                    slices = $('.nivo-slice', slider)._reverse();
-                }
-
-                slices.each(function () {
-                    var slice = $(this);
-                    slice.css({ 'bottom': '0px' });
-                    if (i === settings.slices - 1) {
-                        setTimeout(function () {
-                            slice.animate({ opacity: '1.0' }, settings.animSpeed, '', function () {
-                                slider.trigger('nivo:animFinished');
-                            });
-                        }, 100 + timeBuff);
-                    } else {
-                        setTimeout(function () {
-                            slice.animate({ opacity: '1.0' }, settings.animSpeed);
-                        }, 100 + timeBuff);
-                    }
-                    timeBuff += 50;
-                    i++;
-                });
-            } else if (currentEffect === 'sliceUpDown' || currentEffect === 'sliceUpDownRight' || currentEffect === 'sliceUpDownLeft') {
-                createSlices(slider, settings, vars);
-                timeBuff = 0;
-                i = 0;
-                var v = 0;
-                slices = $('.nivo-slice', slider);
-                if (currentEffect === 'sliceUpDownLeft') {
-                    slices = $('.nivo-slice', slider)._reverse();
-                }
-
-                slices.each(function () {
-                    var slice = $(this);
-                    if (i === 0) {
-                        slice.css('top', '0px');
-                        i++;
-                    } else {
-                        slice.css('bottom', '0px');
-                        i = 0;
-                    }
-
-                    if (v === settings.slices - 1) {
-                        setTimeout(function () {
-                            slice.animate({ opacity: '1.0' }, settings.animSpeed, '', function () {
-                                slider.trigger('nivo:animFinished');
-                            });
-                        }, 100 + timeBuff);
-                    } else {
-                        setTimeout(function () {
-                            slice.animate({ opacity: '1.0' }, settings.animSpeed);
-                        }, 100 + timeBuff);
-                    }
-                    timeBuff += 50;
-                    v++;
-                });
-            } else if (currentEffect === 'fold') {
-                createSlices(slider, settings, vars);
-                timeBuff = 0;
-                i = 0;
-
-                $('.nivo-slice', slider).each(function () {
-                    var slice = $(this);
-                    var origWidth = slice.width();
-                    slice.css({ top: '0px', width: '0px' });
-                    if (i === settings.slices - 1) {
-                        setTimeout(function () {
-                            slice.animate({ width: origWidth, opacity: '1.0' }, settings.animSpeed, '', function () {
-                                slider.trigger('nivo:animFinished');
-                            });
-                        }, 100 + timeBuff);
-                    } else {
-                        setTimeout(function () {
-                            slice.animate({ width: origWidth, opacity: '1.0' }, settings.animSpeed);
-                        }, 100 + timeBuff);
-                    }
-                    timeBuff += 50;
-                    i++;
-                });
-            } else if (currentEffect === 'fade') {
-                createSlices(slider, settings, vars);
-
-                firstSlice = $('.nivo-slice:first', slider);
-                firstSlice.css({
-                    'width': slider.width() + 'px'
-                });
-
-                firstSlice.animate({ opacity: '1.0' }, settings.animSpeed * 2, '', function () {
-                    slider.trigger('nivo:animFinished');
-                });
-            } else if (currentEffect === 'slideInRight') {
-                createSlices(slider, settings, vars);
-
-                firstSlice = $('.nivo-slice:first', slider);
-                firstSlice.css({
-                    'width': '0px',
-                    'opacity': '1'
-                });
-
-                firstSlice.animate({ width: slider.width() + 'px' }, settings.animSpeed * 2, '', function () {
-                    slider.trigger('nivo:animFinished');
-                });
-            } else if (currentEffect === 'slideInLeft') {
-                createSlices(slider, settings, vars);
-
-                firstSlice = $('.nivo-slice:first', slider);
-                firstSlice.css({
-                    'width': '0px',
-                    'opacity': '1',
-                    'left': '',
-                    'right': '0px'
-                });
-
-                firstSlice.animate({ width: slider.width() + 'px' }, settings.animSpeed * 2, '', function () {
-                    // Reset positioning
-                    firstSlice.css({
-                        'left': '0px',
-                        'right': ''
-                    });
-                    slider.trigger('nivo:animFinished');
-                });
-            } else if (currentEffect === 'boxRandom') {
-                createBoxes(slider, settings, vars);
-
-                totalBoxes = settings.boxCols * settings.boxRows;
-                i = 0;
-                timeBuff = 0;
-
-                boxes = shuffle($('.nivo-box', slider));
-                boxes.each(function () {
-                    var box = $(this);
-                    if (i === totalBoxes - 1) {
-                        setTimeout(function () {
-                            box.animate({ opacity: '1' }, settings.animSpeed, '', function () {
-                                slider.trigger('nivo:animFinished');
-                            });
-                        }, 100 + timeBuff);
-                    } else {
-                        setTimeout(function () {
-                            box.animate({ opacity: '1' }, settings.animSpeed);
-                        }, 100 + timeBuff);
-                    }
-                    timeBuff += 20;
-                    i++;
-                });
-            } else if (currentEffect === 'boxRain' || currentEffect === 'boxRainReverse' || currentEffect === 'boxRainGrow' || currentEffect === 'boxRainGrowReverse') {
-                createBoxes(slider, settings, vars);
-
-                totalBoxes = settings.boxCols * settings.boxRows;
-                i = 0;
-                timeBuff = 0;
-
-                // Split boxes into 2D array
-                var rowIndex = 0;
-                var colIndex = 0;
-                var box2Darr = [];
-                box2Darr[rowIndex] = [];
-                boxes = $('.nivo-box', slider);
-                if (currentEffect === 'boxRainReverse' || currentEffect === 'boxRainGrowReverse') {
-                    boxes = $('.nivo-box', slider)._reverse();
-                }
-                boxes.each(function () {
-                    box2Darr[rowIndex][colIndex] = $(this);
-                    colIndex++;
-                    if (colIndex === settings.boxCols) {
-                        rowIndex++;
-                        colIndex = 0;
-                        box2Darr[rowIndex] = [];
-                    }
-                });
-
-                // Run animation
-                for (var cols = 0; cols < settings.boxCols * 2; cols++) {
-                    var prevCol = cols;
-                    for (var rows = 0; rows < settings.boxRows; rows++) {
-                        if (prevCol >= 0 && prevCol < settings.boxCols) {
-                            /* Due to some weird JS bug with loop vars 
-                            being used in setTimeout, this is wrapped
-                            with an anonymous function call */
-                            (function (row, col, time, i, totalBoxes) {
-                                var box = $(box2Darr[row][col]);
-                                var w = box.width();
-                                var h = box.height();
-                                if (currentEffect === 'boxRainGrow' || currentEffect === 'boxRainGrowReverse') {
-                                    box.width(0).height(0);
-                                }
-                                if (i === totalBoxes - 1) {
-                                    setTimeout(function () {
-                                        box.animate({ opacity: '1', width: w, height: h }, settings.animSpeed / 1.3, '', function () {
-                                            slider.trigger('nivo:animFinished');
-                                        });
-                                    }, 100 + time);
-                                } else {
-                                    setTimeout(function () {
-                                        box.animate({ opacity: '1', width: w, height: h }, settings.animSpeed / 1.3);
-                                    }, 100 + time);
-                                }
-                            })(rows, prevCol, timeBuff, i, totalBoxes);
-                            i++;
-                        }
-                        prevCol--;
-                    }
-                    timeBuff += 100;
-                }
-            }
-        };
-
-        // Shuffle an array
-        var shuffle = function shuffle(arr) {
-            for (var j, x, i = arr.length; i; j = parseInt(Math.random() * i, 10), x = arr[--i], arr[i] = arr[j], arr[j] = x) {}
-            return arr;
-        };
-
-        // For debugging
-        var trace = function trace(msg) {
-            if (this.console && typeof console.log !== 'undefined') {
-                console.log(msg);
-            }
-        };
-
-        // Start / Stop
-        this.stop = function () {
-            if (!$(element).data('nivo:vars').stop) {
-                $(element).data('nivo:vars').stop = true;
-                trace('Stop Slider');
-            }
-        };
-
-        this.start = function () {
-            if ($(element).data('nivo:vars').stop) {
-                $(element).data('nivo:vars').stop = false;
-                trace('Start Slider');
-            }
-        };
-
-        // Trigger the afterLoad callback
-        settings.afterLoad.call(this);
-
-        return this;
-    };
-
-    $.fn.nivoSlider = function (options) {
-        return this.each(function (key, value) {
-            var element = $(this);
-            // Return early if this element already has a plugin instance
-            if (element.data('nivoslider')) {
-                return element.data('nivoslider');
-            }
-            // Pass options to plugin constructor
-            var nivoslider = new NivoSlider(this, options);
-            // Store plugin object in this element's data
-            element.data('nivoslider', nivoslider);
-        });
-    };
-
-    //Default settings
-    $.fn.nivoSlider.defaults = {
-        effect: 'random',
-        slices: 15,
-        boxCols: 8,
-        boxRows: 4,
-        animSpeed: 500,
-        pauseTime: 3000,
-        startSlide: 0,
-        directionNav: true,
-        controlNav: true,
-        controlNavThumbs: false,
-        pauseOnHover: true,
-        manualAdvance: false,
-        prevText: 'Prev',
-        nextText: 'Next',
-        randomStart: false,
-        beforeChange: function beforeChange() {},
-        afterChange: function afterChange() {},
-        slideshowEnd: function slideshowEnd() {},
-        lastSlide: function lastSlide() {},
-        afterLoad: function afterLoad() {}
-    };
-
-    $.fn._reverse = [].reverse;
-})(jQuery);
 
 /***/ })
 /******/ ]);

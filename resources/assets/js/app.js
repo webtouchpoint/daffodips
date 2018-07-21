@@ -6,7 +6,6 @@
  */
 
 require('./bootstrap');
-require('./nivoSlider');
 require('./custom');
 
 window.Vue = require('vue');

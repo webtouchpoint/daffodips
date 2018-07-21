@@ -1,17 +1,10 @@
-<section class="welcome py-5">
+<section class="gallery py-5 section_title">
 	<div class="container">
 		<div class="row">
-			<div class="col-md-7">
-				<h6>Welcome to</h6>
-				<h2 class="mb-3 text-blue">Daffodips Foundation School</h2>
-				<!-- <h2 class="mb-3 text-blue"><strong>Daffodips Foundation School</strong></h2> -->
+			<div class="col-md-8 offset-md-2">
+				<h2 class="section_title">Gallery</h2>
 				<p class="lead">Donec ullamcorper nulla non metus auctor fringilla. Vestibulum id ligula porta felis euismod semper. Praesent commodo cursus magna, vel scelerisque nisl consectetur. Fusce dapibus, tellus ac cursus commodo.</p>
-				<p class="lead">Donec ullamcorper nulla non metus auctor fringilla.</p>
 				<p class="lead">Donec ullamcorper nulla non metus auctor fringilla. Vestibulum id ligula porta felis euismod semper. Praesent commodo cursus magna, vel scelerisque nisl consectetur. Fusce dapibus, tellus ac cursus commodo.</p>
-				<p class="lead">Donec ullamcorper nulla non metus auctor fringilla.</p>				
-			</div>
-			<div class="col-md-5">
-				<img class="featurette-image img-fluid mx-auto" src="images/first-student.jpeg"  alt="First Student">
 			</div>
 		</div>
 	</div>
