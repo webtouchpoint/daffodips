@@ -2,8 +2,11 @@
 // Fonts
 @import url("https://fonts.googleapis.com/css?family=Raleway:300,400,600");
 
-@import url("https://fonts.googleapis.com/css?family=Open+Sans");
+// @import url("https://fonts.googleapis.com/css?family=Open+Sans");
 
+@import url("https://fonts.googleapis.com/css?family=Oswald");
+
+@import url("https://fonts.googleapis.com/css?family=Karla");
 
 // Variables
 @import "variables";
@@ -14,9 +17,16 @@
 // Bootstrap
 @import '~bootstrap/scss/bootstrap';
 
+// Fontawesome
+@import '~font-awesome/scss/font-awesome';
+
+// AOS
 @import '~aos/dist/aos';
 
-@import '~bxslider/dist/jquery.bxslider';
+// Slick Carousel
+@import '~slick-carousel/slick/slick';
+
+// @import '~slick-carousel/slick/slick-theme';
 
 // Topbar
 @import "components/topbar";

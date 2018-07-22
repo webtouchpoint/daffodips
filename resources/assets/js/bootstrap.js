@@ -15,9 +15,10 @@ try {
 } catch (e) {}
 
 /**
- * We will load bxSlider
+ * We will load slider
  */
-require('bxslider');
+require('slick-carousel');
+
 
 /**
  * Scroll efect

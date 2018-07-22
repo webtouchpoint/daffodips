@@ -1,14 +1,22 @@
 $(document).ready(function(){
-    // Slider    
-    $('.bxslider').bxSlider({
-        mode: 'fade',
-        touchEnabled: false,
-        controls: true,
-        pager: false,
-        speed: 500,
-        auto: true
+    // Slider
+    $('.js-slick').slick({
+      autoplay: true,
+      autoplaySpeed: 5000,
+      dots: true,
+      draggable: false,
+      fade: true,
+      speed: 1000
     });
-
+    
+    $('.js-slick').on('beforeChange', function(event, slick, currentSlide, nextSlide) {
+      $(slick.$slides).removeClass('is-animating');
+    });
+    
+    $('.js-slick').on('afterChange', function(event, slick, currentSlide, nextSlide) {
+      $(slick.$slides.get(currentSlide)).addClass('is-animating');
+    });
+  
     // Custom Accordion
     var acc = document.getElementsByClassName("custom-accordion");
     var i;
@@ -27,5 +35,4 @@ $(document).ready(function(){
 
     // Scroll
     AOS.init();
-
 });

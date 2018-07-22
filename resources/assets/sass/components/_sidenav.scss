@@ -1,5 +1,15 @@
+
+.sidenav .nav-link {
+    font-size: 16px;
+    color: #333;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 400;
+    padding: 12px 10px;
+    border-bottom: 1px solid #c2c2c2;
+    width: 100%;
+    line-height: 30px;
+}
 .sidenav .nav-link:hover,
 .sidenav .nav-item .active {
-    background-color: $yellow;
-    color: #fff!important;
+    color: $royal-red!important;
 }

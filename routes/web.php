@@ -15,9 +15,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/overview', function () {
-    return view('pages/overview');
-});
+Route::get('/overview', 'PagesController@showOverview')->name('overview');
 
 
 Auth::routes();

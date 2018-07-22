@@ -29,7 +29,7 @@
                         About
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" href="#">Overview</a>
+                        <a class="dropdown-item" href="{{ route('overview') }}">Overview</a>
                         <a class="dropdown-item" href="#">Principal&rsquo;s Message</a>
                         <a class="dropdown-item" href="#">Vission &amp; Mission</a>
                         <a class="dropdown-item" href="#">Future Plan &amp; Thoughts</a>                        
