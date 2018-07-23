@@ -14790,6 +14790,8 @@ body[data-aos-easing=ease-in-out-quart] [data-aos] {
 
 .navbar {
   min-height: 80px;
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
 .navbar-brand {
@@ -14833,6 +14835,7 @@ body[data-aos-easing=ease-in-out-quart] [data-aos] {
   text-transform: uppercase;
   line-height: 22px;
   font-weight: 700;
+  border-top: 4px solid transparent;
   border-bottom: 4px solid transparent;
 }
 
