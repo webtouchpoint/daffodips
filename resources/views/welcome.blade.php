@@ -12,6 +12,8 @@
 
 @include('partials.pages.welcome.feature2')
 
+@include('partials.pages.welcome.parents_lounge')
+
 @include('partials.pages.welcome.gallery')
 
 @endsection

@@ -17,12 +17,13 @@ Route::get('/', function () {
 
 // Admin area
 Route::get('admin', function () {
-    // return redirect('/admin/ebooks');
+    return redirect('/admin/dashboard');
 });
 
 
 Route::middleware(['auth', 'admin', 'revalidate'])->prefix('admin')->namespace('Admin')->group(function () {
-
+	// Admin Controller
+	Route::get('/dashboard', 'AdminController@dashboard')->name('admin.dashboard');
 });
 
 // Pages

@@ -23,7 +23,7 @@
 </head>
 <body>
     <div id="app">
-        @include('layouts.nav')
+        @include('admin.layouts.nav')
 
         <main role="main">
             @yield('content')

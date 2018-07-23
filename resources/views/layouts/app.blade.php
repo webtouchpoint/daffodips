@@ -24,7 +24,7 @@
 </head>
 <body>
     <div id="app">
-        @include('layouts.topbar')
+        <!-- @include('layouts.topbar') -->
 
         @include('layouts.nav')
 

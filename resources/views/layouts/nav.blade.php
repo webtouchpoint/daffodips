@@ -21,7 +21,7 @@
             <ul class="navbar-nav ml-auto">
                 <!-- Home -->
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Home</a>
+                    <a class="nav-link" href="{{ url('/') }}">Home</a>
                 </li>
                 <!-- About -->
                 <li class="nav-item dropdown">

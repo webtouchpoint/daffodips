@@ -1,20 +1,11 @@
 // welcome section
 .welcome {
-    background-color: #fff;
+    // background-color: #fff;
     padding-top: 60px!important;
     padding-bottom: 60px!important;
 }
 
-.welcome h2 {
-    color: #0e2d45;
-    font: 700 32px 'Raleway';
-    text-transform: uppercase;
-    line-height: normal;
-    padding-bottom: 7px;
-    position: relative;
-}
-
-.welcome h6 { color:#636262; font:400 14px 'Open Sans'; text-transform:uppercase; margin-bottom:0px;}
+.welcome h6 { color:#636262; font:400 14px 'Raleway'; text-transform:uppercase; margin-bottom:0px;}
 .welcome h2 { color:#0e2d45; font:700 32px 'Raleway'; text-transform:uppercase; line-height:normal; padding-bottom:7px; position:relative;}
 .welcome h2::after { content:""; position:absolute; width:55px; height:2px; background-color:#424242; bottom:0; left:0;}
 
@@ -31,6 +22,7 @@
 // Feature section
 .feature {
     // background-color: $dark-white;
+        background-image: url(/images/pinstripe.png);
 }
 
 .feature .section_title{ color: #fff!important; }
@@ -47,16 +39,26 @@
     color: #fff;
 }
 
+.parents-lounge {
+    background-image: url(/images/pinstripe.png);
+}
+
+.parents-lounge .card {
+    background-color: rgba(232,231,231,0.86)!important;
+    color: $blue;
+}
+
 // Gallery section
 .gallery {
-	background-color: #fff;
+	// background-color: #fff;
 }
+
 
 // Parallax
 .bgimg-1, .bgimg-2 {
     position: relative;
     // opacity: 0.65;
-        opacity: 0.8;
+    opacity: 0.8;
     background-attachment: fixed;
     background-position: center;
     background-repeat: no-repeat;
@@ -91,7 +93,7 @@
 h3 {
     letter-spacing: 5px;
     text-transform: uppercase;
-    font: 20px "Lato", sans-serif;
+    font: 20px "Raleway", sans-serif;
     color: #111;
 }
 
@@ -118,6 +120,7 @@ h3 {
 .feature2 h5 {
     font-size: 16px;
 }
+
 
 
 

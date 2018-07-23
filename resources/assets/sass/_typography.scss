@@ -1,17 +1,19 @@
 h1, h2, h3, h4, h5, h6 {
-    font-family: Raleway;
+    font-family: Raleway!important;
+    color: $brand;
 }
 
 // span.dark { color:#e04622;}
-span.dark { color:$dogwood-red;}
+span.dark { color:$brand;}
 
 // Paragraph
 p {
 	font-weight: 300;
 }
+
 .lead {
     font-size: 16px!important;
-    font-weight: 300;
+    font-weight: 300!important;
 }
 
 // all section
