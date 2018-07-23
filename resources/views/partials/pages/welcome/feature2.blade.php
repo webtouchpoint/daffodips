@@ -2,7 +2,7 @@
 	<div class="container">
 		<div class="row">
 			<div class="col-md-4">
-				<h2 class="mb-3">Our Priorit and Safeguards</h2>
+				<h2 class="mb-3">Our Priority and Safeguards</h2>
 				<p class="lead">Donec ullamcorper nulla non metus auctor fringilla. Vestibulum id ligula porta felis euismod semper. Praesent commodo cursus magna, vel scelerisque nisl consectetur. Fusce dapibus, tellus ac cursus commodo.</p>
 			</div>
 			<div class="col-md-8">

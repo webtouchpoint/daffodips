@@ -15,6 +15,21 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+// Admin area
+Route::get('admin', function () {
+    // return redirect('/admin/ebooks');
+});
+
+
+Route::middleware(['auth', 'admin', 'revalidate'])->prefix('admin')->namespace('Admin')->group(function () {
+
+});
+
+// Pages
+Route::get('/future-plan-and-thouths', 'PagesController@showFuturePlanAndThoughts')->name('futurePlanAndThoughts');
+Route::get('/mission-statement', 'PagesController@showMissionStatement')->name('missionStatement');
+Route::get('/vision-statement', 'PagesController@showVisionStatement')->name('visionStatement');
+Route::get('/principals-desk', 'PagesController@showprincipalsDesk')->name('principalsDesk');
 Route::get('/overview', 'PagesController@showOverview')->name('overview');
 
 

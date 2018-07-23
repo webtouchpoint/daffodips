@@ -10,7 +10,7 @@ h6 {
 }
 
 span.dark {
-  color: #e04622;
+  color: #d71868;
 }
 
 p {
@@ -14833,7 +14833,8 @@ body[data-aos-easing=ease-in-out-quart] [data-aos] {
   color: #8f8f8f;
   display: block;
   text-transform: uppercase;
-  font-weight: 700;
+  line-height: 22px;
+  font-weight: bolder;
 }
 
 @media (min-width: 768px) {
@@ -14846,7 +14847,7 @@ body[data-aos-easing=ease-in-out-quart] [data-aos] {
 
 .navbar-daffodips .nav-item.active .nav-link,
 .navbar-daffodips .nav-item:hover .nav-link {
-  color: #011b3a;
+  color: #d71868;
 }
 
 /* for dropdown only - change the color of droodown */
@@ -14859,13 +14860,14 @@ body[data-aos-easing=ease-in-out-quart] [data-aos] {
 
 .navbar-daffodips .dropdown-item {
   font-family: 'Karla';
-  font-size: 14px;
-  color: #011b3a;
+  font-weight: 700;
+  color: #8f8f8f;
   min-width: 15rem;
 }
 
 .navbar-daffodips .dropdown-item:hover,
 .navbar-daffodips .dropdown-item:focus {
+  color: #d71868;
   background-color: #fff;
 }
 
